@@ -1,0 +1,111 @@
+{
+  "hosting": {
+    "public": "dist/spa",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "/auth/login/yandex",
+        "run": {
+          "serviceId": "aip-1",
+          "region": "us-central1",
+          "headers": {
+            "x-forwarded-cookie": "true",
+            "cookie": "include"
+          }
+        }
+      },
+      {
+        "source": "/auth/login/google",
+        "run": {
+          "serviceId": "aip-1",
+          "region": "us-central1",
+          "headers": {
+            "x-forwarded-cookie": "true",
+            "cookie": "include"
+          }
+        }
+      },
+      {
+        "source": "/auth/login/vk",
+        "run": {
+          "serviceId": "aip-1",
+          "region": "us-central1",
+          "headers": {
+            "x-forwarded-cookie": "true",
+            "cookie": "include"
+          }
+        }
+      },
+      {
+        "source": "/auth/callback/yandex",
+        "run": {
+          "serviceId": "aip-1",
+          "region": "us-central1",
+          "headers": {
+            "x-forwarded-cookie": "true",
+            "cookie": "include"
+          }
+        }
+      },
+      {
+        "source": "/auth/callback/google",
+        "run": {
+          "serviceId": "aip-1",
+          "region": "us-central1",
+          "headers": {
+            "x-forwarded-cookie": "true",
+            "cookie": "include"
+          }
+        }
+      },
+      {
+        "source": "/auth/callback/vk",
+        "run": {
+          "serviceId": "aip-1",
+          "region": "us-central1",
+          "headers": {
+            "x-forwarded-cookie": "true",
+            "cookie": "include"
+          }
+        }
+      },
+      {
+        "source": "/auth/*",
+        "run": {
+          "serviceId": "aip-1",
+          "region": "us-central1",
+          "headers": {
+            "x-forwarded-cookie": "true",
+            "cookie": "include"
+          }
+        }
+      },
+      {
+        "source": "/chats",
+        "run": {
+          "serviceId": "aip-1",
+          "region": "us-central1",
+          "headers": {
+            "x-forwarded-cookie": "true",
+            "cookie": "include"
+          }
+        }
+      },
+      {
+        "source": "/chats/**",
+        "run": {
+          "serviceId": "aip-1",
+          "region": "us-central1",
+          "headers": {
+            "x-forwarded-cookie": "true",
+            "cookie": "include"
+          }
+        }
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
