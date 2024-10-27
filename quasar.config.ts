@@ -113,6 +113,12 @@ export default configure((ctx) => {
           secure: true,
           pathRewrite: { '^/api': '' },
         },
+        '/user_actions': {
+          target: 'http://localhost:8956',
+          changeOrigin: false,
+          secure: true,
+          pathRewrite: { '^/api': '' },
+        },
       },
       open: true, // opens browser window automatically
     },

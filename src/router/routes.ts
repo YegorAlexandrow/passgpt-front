@@ -12,9 +12,18 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/SignInPage.vue') }],
   },
   {
-    path: '/test',
+    path: '/subscribe',
     component: () => import('layouts/EmptyLayout.vue'),
-    children: [{ path: '', component: () => import('pages/TestPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/SubscribePage.vue') },
+    ],
+  },
+  {
+    path: '/share',
+    component: () => import('layouts/EmptyLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/SharedChatPage.vue') },
+    ],
   },
 
   // Always leave this as last one,

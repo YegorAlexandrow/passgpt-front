@@ -1,9 +1,9 @@
 <template>
-  <q-page class="scrollable-container">
+  <q-card class="scrollable-container" flat>
     <div class="row horizontal-scroll">
       <q-card
         class="col q-ma-xs column scroll-item"
-        v-for="plan in plans"
+        v-for="plan in filteredPlans"
         :key="plan._id"
         flat
         bordered
@@ -17,13 +17,13 @@
             {{ `${plan.price} ₽` }}
           </div>
         </q-card-section>
-        <q-card-section class="text-body1">
+        <q-card-section class="text-body1" style="height: 5em">
           {{ plan.comment }}
         </q-card-section>
 
         <q-separator />
 
-        <q-card-section class="col">
+        <q-card-section class="col q-pt-none">
           <div
             v-for="(feature, index) in plan.features"
             :key="index"
@@ -41,15 +41,33 @@
           </div>
         </q-card-section>
         <q-card-actions class="row q-mt-lg" v-if="plan.action">
-          <q-btn class="col q-py-md text-h6" color="primary" unelevated rounded>
+          <q-btn
+            class="col q-py-md text-h6"
+            color="primary"
+            @click="plan.action.callback"
+            unelevated
+            rounded
+          >
             {{ plan.action.title }}
           </q-btn>
         </q-card-actions>
       </q-card>
     </div>
-  </q-page>
+  </q-card>
 </template>
 <script setup lang="ts">
+import { useChatStore } from 'src/stores/chatStore';
+import { computed } from 'vue';
+
+const c = useChatStore();
+
+const props = defineProps({
+  showFree: {
+    type: Boolean,
+    default: true,
+  },
+});
+
 const plans = [
   {
     _id: 'free',
@@ -94,13 +112,38 @@ const plans = [
         title: 'Доступ к актуальным новостям',
         icon: 'eva-plus',
       },
+    ],
+    action: {
+      title: 'Выбрать',
+      callback: () => c.purchase('base'),
+    },
+  },
+  {
+    _id: 'daily_boost',
+    display_name: '⚡️DAILY BOOST',
+    price: '60',
+    comment: 'Интенсивный заряд возможностей на один день',
+    features: [
       {
-        title: 'Прогноз погоды',
-        icon: 'eva-plus',
+        title: '<b>151</b> сообщение ChatGPT на день',
+        icon: 'eva-arrowhead-up',
+      },
+      {
+        title: 'До <b>151</b> генерации картинок',
+        icon: 'eva-arrowhead-up',
+      },
+      {
+        title: 'Поиск в интернете',
+        icon: 'eva-checkmark',
+      },
+      {
+        title: 'Доступ к актуальным новостям',
+        icon: 'eva-checkmark',
       },
     ],
     action: {
       title: 'Выбрать',
+      callback: () => c.purchase('base'),
     },
   },
   {
@@ -126,10 +169,6 @@ const plans = [
         icon: 'eva-checkmark',
       },
       {
-        title: 'Прогноз погоды',
-        icon: 'eva-checkmark',
-      },
-      {
         title: 'Эксклюзивный доступ к <strong>GPT-o1</strong>',
         subtitle: 'Для самых сложных задач и решений',
         icon: 'eva-plus',
@@ -144,43 +183,21 @@ const plans = [
         subtitle: 'Для анализа больших текстов',
         icon: 'eva-plus',
       },
-    ],
-    action: {
-      title: 'Присоединиться',
-    },
-  },
-  {
-    _id: 'daily_boost',
-    display_name: '⚡️DAILY BOOST',
-    price: '60',
-    comment: 'Интенсивный заряд возможностей на один день',
-    features: [
       {
-        title: '<b>151</b> сообщение ChatGPT на день',
-        icon: 'eva-arrowhead-up',
-      },
-      {
-        title: 'До <b>151</b> генерации картинок',
-        icon: 'eva-arrowhead-up',
-      },
-      {
-        title: 'Поиск в интернете',
-        icon: 'eva-checkmark',
-      },
-      {
-        title: 'Новости',
-        icon: 'eva-checkmark',
-      },
-      {
-        title: 'Прогноз погоды',
-        icon: 'eva-checkmark',
+        title: 'Будет позже!🕓',
+        icon: '',
       },
     ],
     action: {
-      title: 'Выбрать',
+      title: 'Следить за обновлениями',
+      callback: () => c.subscribeEmail('pro_waitlist'),
     },
   },
 ];
+
+const filteredPlans = computed(() => {
+  return plans.filter((x) => x._id != 'free' || props.showFree);
+});
 </script>
 <style>
 .scrollable-container {

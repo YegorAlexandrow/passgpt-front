@@ -7,7 +7,7 @@
           size="md"
           flat
           round
-          class="text-primary bg-secondary"
+          class="text-primary bg-secondary q-mr-sm"
           :style="{
             transition: 'ease-in-out 0.3s',
             transform: leftDrawerOpen ? 'unset' : 'scaleX(-1)',
@@ -23,7 +23,7 @@
           class="text-primary bg-secondary"
           @click="newChat"
         ></q-btn>
-        <q-btn
+        <!-- <q-btn
           color="primary"
           icon="eva-edit-2-outline"
           size="md"
@@ -32,8 +32,9 @@
           class="text-primary bg-secondary"
           @click="purchase"
           >PAY!</q-btn
-        >
+        > -->
         <q-space></q-space>
+        <BuyButton class="q-mr-md"></BuyButton>
         <UserBadge></UserBadge>
       </q-toolbar>
     </q-header>
@@ -43,7 +44,6 @@
       v-model="leftDrawerOpen"
       side="left"
       class="column q-mr-sm q-pt-xl"
-      bordered
     >
       <q-item-list>
         <q-item
@@ -65,19 +65,18 @@
               flat
               round
               icon="mdi-dots-vertical"
-              color="primary"
               size="sm"
               aria-label="Редактировать элемент"
             >
               <q-menu flat bordered>
                 <q-list style="min-width: 100px">
-                  <q-item clickable v-close-popup disable>
+                  <q-item clickable v-close-popup @click="shareChat(chat)">
                     <q-item-section avatar>
                       <q-icon name="ios_share" />
                     </q-item-section>
                     <q-item-section>Поделиться</q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup @click="renameChat(chat.id)">
+                  <q-item clickable v-close-popup @click="renameChat(chat)">
                     <q-item-section avatar>
                       <q-icon name="eva-edit-outline" />
                     </q-item-section>
@@ -99,12 +98,23 @@
           </q-item-section>
         </q-item>
       </q-item-list>
+
+      <q-inner-loading :showing="c.isChatListLoading" class="text-primary">
+        <q-spinner-hourglass size="sm" color="primary"></q-spinner-hourglass>
+        Загружаем список чатов
+      </q-inner-loading>
     </q-drawer>
 
     <!-- Page Container -->
     <q-page-container>
       <router-view />
     </q-page-container>
+    <q-dialog v-model="showShareChatDialog">
+      <ShareChatCard
+        :link="shareChatDialogLink"
+        :key="shareChatDialogLink"
+      ></ShareChatCard>
+    </q-dialog>
   </q-layout>
 </template>
 
@@ -114,6 +124,9 @@ import { useRouter } from 'vue-router';
 import { useChatStore } from 'src/stores/chatStore';
 import { useQuasar } from 'quasar';
 import UserBadge from 'src/components/UserBadge.vue';
+import BuyButton from 'src/components/BuyButton.vue';
+import ShareChatCard from 'src/components/ShareChatCard.vue';
+import { Chat } from 'src/models/Chat';
 
 const c = useChatStore();
 const router = useRouter();
@@ -126,10 +139,10 @@ function newChat() {
   c.currentChatId = null;
 }
 
-async function purchase() {
-  const resp = await c.purchase();
-  console.log(resp);
-}
+// async function purchase() {
+//   const resp = await c.purchase();
+//   console.log(resp);
+// }
 
 function confirmDelete(chatId: string) {
   $q.dialog({
@@ -144,7 +157,7 @@ function confirmDelete(chatId: string) {
     .onCancel(() => {});
 }
 
-function renameChat(chatId: string) {
+function renameChat(chat: Chat) {
   $q.dialog({
     title: 'Переименовать чат',
     prompt: {
@@ -156,7 +169,7 @@ function renameChat(chatId: string) {
     color: 'primary',
   })
     .onOk(async (data: string) => {
-      await c.renameChat(chatId, data);
+      await c.patchChat(chat, data);
     })
     .onCancel(() => {
       // console.log('>>>> Cancel')
@@ -164,6 +177,15 @@ function renameChat(chatId: string) {
     .onDismiss(() => {
       // console.log('I am triggered on both OK and Cancel')
     });
+}
+
+const showShareChatDialog = ref(false);
+const shareChatDialogLink = ref('');
+
+async function shareChat(chat: Chat) {
+  await c.patchChat(chat, chat.display_name, true);
+  shareChatDialogLink.value = `${location.origin}/share?c=${chat.id}`;
+  showShareChatDialog.value = true;
 }
 
 watch(
@@ -182,6 +204,9 @@ const isMobile = () => {
   );
 };
 
+const theme = localStorage.getItem('theme') || 'system';
+$q.dark.set(theme == 'system' ? 'auto' : theme == 'dark');
+
 onMounted(async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const chatId = urlParams.get('c');
@@ -197,7 +222,7 @@ onMounted(async () => {
   }
 });
 </script>
-<style scoped>
+<style>
 /* Контейнер для элемента списка */
 .hoverable-item {
   transition: background-color 0.3s ease;
@@ -205,7 +230,7 @@ onMounted(async () => {
 
 /* Изменение фона при наведении курсора */
 .hoverable-item:hover {
-  background-color: #f0f0f0; /* Выберите подходящий цвет */
+  background-color: rgba(0, 0, 0, 0.1); /* Выберите подходящий цвет */
 }
 
 /* Стилизация боковой кнопки */
@@ -222,5 +247,9 @@ onMounted(async () => {
 .active-item {
   font-weight: 500;
   background-color: rgba(126, 87, 194, 0.15);
+}
+
+body {
+  overflow-y: scroll;
 }
 </style>

@@ -2,7 +2,7 @@
   <q-chip
     :icon="iconLabel"
     outline
-    color="primary"
+    color="accent"
     class="multi-line-chip q-py-xs"
   >
     {{ props.message.text }}

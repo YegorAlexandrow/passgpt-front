@@ -12,10 +12,16 @@ export const useChatStore = defineStore('chatStore', () => {
   const chats = ref<Chat[]>([]);
   const messages = ref<Message[]>([]);
   const currentChatId = ref<string | null>(null);
-  const isLoading = ref<boolean>(false);
+
+  const isMessageLoading = ref<boolean>(false);
+  const isUserLoading = ref<boolean>(false);
+  const isChatListLoading = ref<boolean>(false);
+  const isChatLoading = ref<boolean>(false);
+  const isSubLoading = ref<boolean>(false);
 
   const currentUser = ref<User | null>(null);
   const currentSubscription = ref<Subscription | null>(null);
+  const subscriptionHistory = ref<Subscription[]>([]);
 
   const $q = useQuasar();
 
@@ -25,12 +31,17 @@ export const useChatStore = defineStore('chatStore', () => {
     return chats.value.find((c) => c.id == currentChatId.value);
   });
 
-  const createErrorNotification = (message: string) => {
+  const createErrorNotification = (
+    message: string,
+    type: string = 'warning',
+    icon: string = 'eva-alert-circle-outline',
+  ) => {
     $q.notify({
-      type: 'warning', // Тип уведомления (ошибка)
+      type: type, // Тип уведомления (ошибка)
       message: message, // Текст сообщения
       position: 'top', // Позиция уведомления (вверху экрана)
-      icon: 'eva-alert-circle-outline',
+      html: true,
+      icon: icon,
       actions: [
         { icon: 'close', color: 'black', handler: () => {} }, // Кнопка закрытия уведомления
       ],
@@ -49,7 +60,28 @@ export const useChatStore = defineStore('chatStore', () => {
     location.href = '/login';
   }
 
+  const getDeclensionOfMessages = (count: number) => {
+    const lastDigit = count % 10;
+    const lastTwoDigits = count % 100;
+
+    if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+      return 'сообщений';
+    }
+
+    switch (lastDigit) {
+      case 1:
+        return 'сообщение';
+      case 2:
+      case 3:
+      case 4:
+        return 'сообщения';
+      default:
+        return 'сообщений';
+    }
+  };
+
   async function fetchActualSubscription() {
+    isSubLoading.value = true;
     try {
       const response = await fetch(`${API_BASE}/subscriptions/mine`, {
         method: 'GET',
@@ -63,9 +95,54 @@ export const useChatStore = defineStore('chatStore', () => {
     } catch (e) {
       currentSubscription.value = null;
     }
+    isSubLoading.value = false;
+  }
+
+  async function cancelSubscription() {
+    if (currentSubscription.value) {
+      isSubLoading.value = true;
+
+      try {
+        const response = await fetch(
+          `${API_BASE}/subscriptions/${currentSubscription.value._id}/cancel`,
+          {
+            method: 'POST',
+            credentials: 'include',
+          },
+        );
+        if (response.ok) {
+          await fetchActualSubscription();
+          createErrorNotification((await response.json()).message);
+        } else {
+          currentSubscription.value = null;
+        }
+      } catch (e) {
+        currentSubscription.value = null;
+      }
+      isSubLoading.value = false;
+    }
+  }
+
+  async function listSubscriptions() {
+    isSubLoading.value = true;
+    try {
+      const response = await fetch(`${API_BASE}/subscriptions`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        subscriptionHistory.value = await response.json();
+      } else {
+        subscriptionHistory.value = [];
+      }
+    } catch (e) {
+      subscriptionHistory.value = [];
+    }
+    isSubLoading.value = false;
   }
 
   async function fetchUser() {
+    isUserLoading.value = true;
     try {
       const response = await fetch(`${API_BASE}/auth/me`, {
         method: 'GET',
@@ -79,34 +156,59 @@ export const useChatStore = defineStore('chatStore', () => {
     } catch (e) {
       currentUser.value = null;
     }
+    isUserLoading.value = false;
   }
 
   async function listChats() {
+    isChatListLoading.value = true;
     const response = await fetch(`${API_BASE}/chats`, {
       method: 'GET',
       credentials: 'include',
     });
     chats.value = await response.json();
+    isChatListLoading.value = false;
   }
 
-  async function purchase() {
+  async function purchase(type: string) {
+    // try {
+    const response = await fetch(`${API_BASE}/subscriptions/purchase`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      const errorMessage =
+        errorData.detail ||
+        'Не удалось выполнить покупку. Пожалуйста, попробуйте снова.';
+      createErrorNotification(errorMessage);
+    } else {
+      const resp = await response.json();
+      window.location.href = resp.payment_url;
+    }
+    // } catch (e) {
+    //   console.log(e);
+    //   createErrorNotification('Произошла ошибка во время покупки.');
+    // }
+  }
+
+  async function subscribeEmail(topic: string) {
     try {
-      const response = await fetch(`${API_BASE}/subscriptions/purchase`, {
+      const response = await fetch(`${API_BASE}/user_actions/subscribe_email`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'daily_boost' }),
+        body: JSON.stringify({ topic }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMessage =
-          errorData.detail ||
-          'Не удалось выполнить покупку. Пожалуйста, попробуйте снова.';
-        createErrorNotification(errorMessage);
+      if (response.ok) {
+        const resp = await response.json();
+        createErrorNotification(resp.message, 'info');
       }
     } catch (e) {
-      createErrorNotification('Произошла ошибка во время покупки.');
+      createErrorNotification('Произошла ошибка во время подписки.');
     }
   }
 
@@ -123,17 +225,27 @@ export const useChatStore = defineStore('chatStore', () => {
     await listChats();
   }
 
-  async function renameChat(chatId: string, newName: string) {
-    await fetch(`${API_BASE}/chats/${chatId}`, {
+  async function patchChat(
+    chat: Chat,
+    newName: string | null = null,
+    isShared: boolean | null = null,
+    isStarred: boolean | null = null,
+  ) {
+    await fetch(`${API_BASE}/chats/${chat.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ display_name: newName }),
+      body: JSON.stringify({
+        display_name: newName == null ? chat.display_name : newName,
+        is_shared: isShared == null ? chat.is_shared : isShared,
+        is_starred: isStarred == null ? chat.is_starred : isStarred,
+      }),
       credentials: 'include',
     });
     await listChats();
   }
 
   async function fetchChatMessages(chatId: string) {
+    isChatLoading.value = true;
     try {
       currentChatId.value = chatId;
       const response = await fetch(
@@ -156,6 +268,48 @@ export const useChatStore = defineStore('chatStore', () => {
     } catch (e) {
       createErrorNotification('Произошла ошибка при получении сообщений.');
     }
+    isChatLoading.value = false;
+  }
+
+  async function fetchSharedChatMessages(chatId: string) {
+    isChatLoading.value = true;
+    try {
+      currentChatId.value = chatId;
+      const response = await fetch(
+        `${API_BASE}/chats/shared/${currentChatId.value}`,
+        {
+          method: 'GET',
+          credentials: 'include',
+        },
+      );
+
+      if (response.ok) {
+        messages.value = (await response.json()).reverse();
+      } else {
+        const errorData = await response.json();
+        const errorMessage =
+          errorData.detail ||
+          'Не удалось получить сообщения. Пожалуйста, попробуйте снова.';
+        createErrorNotification(errorMessage);
+      }
+    } catch (e) {
+      createErrorNotification('Произошла ошибка при получении сообщений.');
+    }
+    isChatLoading.value = false;
+  }
+
+  async function checkMessagesCount() {
+    if (currentSubscription.value) {
+      const delta =
+        currentSubscription.value?.message_per_day_limit -
+        currentSubscription.value.messages_in_last_day;
+      if (delta < 5) {
+        createErrorNotification(
+          `У Вас осталось ${delta} ${getDeclensionOfMessages(delta)} на сегодня.<br/>
+          Вы можете <a href="/test">повысить уровень подписки</a>`,
+        );
+      }
+    }
   }
 
   // Функция для инициализации чата с стримингом сообщений
@@ -169,7 +323,7 @@ export const useChatStore = defineStore('chatStore', () => {
       tool_name: undefined,
     });
 
-    isLoading.value = true;
+    isMessageLoading.value = true;
 
     const response = await fetch(
       currentChatId.value
@@ -185,12 +339,12 @@ export const useChatStore = defineStore('chatStore', () => {
 
     if (!response.ok) {
       createErrorNotification((await response.json()).detail);
-      isLoading.value = false;
+      isMessageLoading.value = false;
       return;
     }
 
     if (!response.body) {
-      isLoading.value = false;
+      isMessageLoading.value = false;
       return;
     }
     const reader = response.body.getReader();
@@ -203,7 +357,7 @@ export const useChatStore = defineStore('chatStore', () => {
         .then(({ done, value }) => {
           if (done) {
             console.log('Stream finished');
-            isLoading.value = false;
+            isMessageLoading.value = false;
             return;
           }
 
@@ -223,7 +377,7 @@ export const useChatStore = defineStore('chatStore', () => {
                 processStreamData(jsonData);
               } catch (e) {
                 console.error('Error parsing JSON:', e);
-                isLoading.value = false;
+                isMessageLoading.value = false;
               }
             }
           }
@@ -285,7 +439,7 @@ export const useChatStore = defineStore('chatStore', () => {
           message1.text = data.text + '\n';
           message1.progress = false;
         }
-        fetchActualSubscription();
+        fetchActualSubscription().then(checkMessagesCount);
         break;
       case 'tool_new':
         const tmp = messages.value.pop();
@@ -328,19 +482,28 @@ export const useChatStore = defineStore('chatStore', () => {
     chats,
     messages,
     currentChatId,
-    isLoading,
+    isMessageLoading,
+    isUserLoading,
+    isChatLoading,
+    isChatListLoading,
+    isSubLoading,
     currentChat,
     currentUser,
     currentSubscription,
+    subscriptionHistory,
     sendMessage,
     listChats,
     fetchChatMessages,
     deleteChat,
-    renameChat,
+    patchChat,
     login,
     logout,
     fetchUser,
     purchase,
     fetchActualSubscription,
+    listSubscriptions,
+    cancelSubscription,
+    subscribeEmail,
+    fetchSharedChatMessages,
   };
 });

@@ -8,9 +8,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&family=Wix+Madefor+Text:ital,wght@0,400..800;1,400..800&display=swap');
 
 body {
-  font-family: 'Rubik', sans-serif;
+  font-family: 'Rubik', sans-serif !important;
   font-weight: 400;
   font-size: 1.1rem;
+}
+
+.body--dark {
+  --q-primary: #b388ff; /* Темный цвет для основной темы */
+  --q-secondary: #171717; /* Темный цвет для второстепенной темы */
+  --q-accent: #ff7043; /* Акцентный цвет в темной теме */
+  --q-positive: #00e676; /* Позитивный цвет для темной темы */
+  --q-negative: #d32f2f; /* Отрицательный цвет для темной темы */
+  --q-info: #00bcd4; /* Информационный цвет для темной темы */
+  --q-warning: #ffa000; /* Цвет предупреждения для темной темы */
+  --q-dark-page: #212121; /* Фон страницы для темной темы */
+  --q-dark: #171717; /* Фон страницы для темной темы */
+  --q-message-bubble: #2f2f2f;
+  --q-message-bubble-text: #fafafa;
+}
+
+.body--light {
+  --q-primary: #7e57c2; /* Основной цвет для светлой темы */
+  --q-secondary: #fafafa; /* Второстепенный цвет для светлой темы */
+  --q-accent: #ff7f50; /* Акцентный цвет для светлой темы */
+  --q-positive: #21ba45; /* Позитивный цвет для светлой темы */
+  --q-negative: #ef5350; /* Отрицательный цвет для светлой темы */
+  --q-info: #31ccec; /* Информационный цвет для светлой темы */
+  --q-warning: #ffca28; /* Цвет предупреждения для светлой темы */
+  --q-light-page: #ffffff; /* Фон страницы для светлой темы */
+  --q-message-bubble: #f0f0f0;
+  --q-message-bubble-text: #010101;
+}
+
+.q-layout__section--marginal {
+  background-color: unset;
+  color: unset;
 }
 
 @media only screen and (max-width: 600px) {

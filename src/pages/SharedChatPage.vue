@@ -1,16 +1,8 @@
 <template>
   <q-page class="q-pb-md column q-mx-auto" style="max-width: 820px">
-    <WelcomeScreen
-      v-if="
-        (!c.currentChatId || c.messages.length == 0) &&
-        !c.isMessageLoading &&
-        !c.isChatLoading
-      "
-      class="col"
-    ></WelcomeScreen>
     <div
       class="col q-px-md"
-      v-else-if="!c.isChatLoading"
+      v-if="!c.isChatLoading"
       style="max-width: 100%; overflow: hidden"
     >
       <template v-for="m in c.messages" :key="m.id">
@@ -64,42 +56,6 @@
         }"
         @click="scrollDown"
       />
-      <q-input
-        class="col"
-        v-model="newMessageText"
-        rounded
-        outlined
-        autogrow
-        type="text"
-        placeholder="Ваше сообщение..."
-        input-style="padding-left: 20px; padding-right: 20px; margin-right: 20px; font-size: 1.1rem; font-weight: 400; max-height: 7em;"
-        @keyup.enter="
-          (e: KeyboardEvent) => {
-            if (e.ctrlKey && !c.isMessageLoading) sendMessage();
-          }
-        "
-      >
-        <template v-slot:append>
-          <q-btn
-            class="bg-primary text-white q-pl-xs msg-btn"
-            round
-            flat
-            icon="send"
-            @click="sendMessage"
-            :loading="c.isMessageLoading"
-            :disable="newMessageText.length < 1"
-            style="transform: translateX(4px); z-index: 1000"
-          >
-            <q-tooltip> CTRL + ENTER </q-tooltip>
-          </q-btn>
-        </template>
-      </q-input>
-      <div
-        class="text-caption text-center text-grey q-mt-xs"
-        style="word-wrap: none; text-overflow: ellipsis"
-      >
-        ИИ может ошибаться. Проверяйте важную информацию.
-      </div>
     </div>
   </q-page>
 </template>
@@ -109,21 +65,11 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useChatStore } from 'src/stores/chatStore';
 import MarkDownRenderer from 'src/components/MarkDownRenderer.vue';
 import ToolLabel from 'src/components/ToolLabel.vue';
-import WelcomeScreen from 'src/components/WelcomeScreen.vue';
 
 const c = useChatStore();
 
-const newMessageText = ref('');
 const scrollPosition = ref(0);
 const maxScrollPosition = ref(1);
-
-async function sendMessage() {
-  if (newMessageText.value.length < 1) return;
-
-  const t = newMessageText.value;
-  newMessageText.value = '';
-  await c.sendMessage(t);
-}
 
 function scrollDown() {
   window.scrollTo({
@@ -139,7 +85,10 @@ function handleScroll() {
 }
 
 onMounted(async () => {
-  c.listChats();
+  const urlParams = new URLSearchParams(window.location.search);
+  const chatId = urlParams.get('c');
+  if (chatId) c.fetchSharedChatMessages(chatId);
+
   handleScroll();
   window.addEventListener('scroll', handleScroll);
 });

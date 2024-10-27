@@ -30,7 +30,7 @@
 
   <!-- Диалог для изображения -->
   <q-dialog v-model="isImageDialogOpen">
-    <q-card class="q-pa-none" style="border-radius: 26px">
+    <q-card class="q-pa-none" style="border-radius: 26px; max-width: 90vw">
       <img
         :src="selectedImageSrc"
         alt="Opened Image"

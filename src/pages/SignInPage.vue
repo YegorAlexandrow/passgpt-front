@@ -69,8 +69,10 @@ const options = ref([
   aspect-ratio: 1/1;
   object-fit: cover;
 }
+
 .bg-stock {
-  background-image: url('/images/background_stock1.jpg');
+  background-image: url('/images/background_stock2.webp');
   background-size: cover;
+  background-position: center;
 }
 </style>
