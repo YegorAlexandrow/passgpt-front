@@ -21,11 +21,21 @@
           <ToolLabel :message="m"></ToolLabel>
         </template>
         <template v-else>
+          <div class="row" v-if="m.attachments && m.attachments.length > 0">
+            <q-space></q-space>
+            <img
+              :src="a"
+              v-for="a in m.attachments"
+              :key="a"
+              class="q-message__image"
+            />
+          </div>
           <q-chat-message
             :text="[m.text]"
             sent
             class="q-mr-lg q-mt-lg q-mb-lg"
             bg-color="var(--q-message-bubble)"
+            style="white-space: pre-wrap"
           ></q-chat-message>
         </template>
       </template>
@@ -64,6 +74,12 @@
         }"
         @click="scrollDown"
       />
+      <input
+        type="file"
+        id="fileinput"
+        style="display: none"
+        accept="image/*"
+      />
       <q-input
         class="col"
         v-model="newMessageText"
@@ -79,6 +95,38 @@
           }
         "
       >
+        <template v-slot:prepend>
+          <q-btn
+            v-if="!attachedFile"
+            round
+            flat
+            @click="attachFile"
+            :loading="c.isMessageLoading"
+            icon="eva-attach"
+          ></q-btn>
+
+          <div
+            v-if="attachedFile"
+            :style="{
+              width: '48px',
+              aspectRatio: '1 / 1',
+              borderRadius: '8px',
+              background: `url(${attachedFileUrl})`,
+              backgroundSize: 'cover',
+              position: 'relative',
+            }"
+          >
+            <q-btn
+              dense
+              round
+              icon="close"
+              color="negative"
+              size="xs"
+              style="position: absolute; top: 0; right: 0"
+              @click="attachedFile = null"
+            />
+          </div>
+        </template>
         <template v-slot:append>
           <q-btn
             class="bg-primary text-white q-pl-xs msg-btn"
@@ -105,11 +153,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useChatStore } from 'src/stores/chatStore';
 import MarkDownRenderer from 'src/components/MarkDownRenderer.vue';
 import ToolLabel from 'src/components/ToolLabel.vue';
 import WelcomeScreen from 'src/components/WelcomeScreen.vue';
+import { computed } from 'vue';
+import { useMeta } from 'quasar';
 
 const c = useChatStore();
 
@@ -122,7 +172,28 @@ async function sendMessage() {
 
   const t = newMessageText.value;
   newMessageText.value = '';
-  await c.sendMessage(t);
+  await c.sendMessage(t, attachedFile.value);
+  attachedFile.value = null;
+}
+
+const attachedFile = ref<File | null>(null);
+const attachedFileUrl = computed(() =>
+  attachedFile.value ? URL.createObjectURL(attachedFile.value) : '',
+);
+
+function attachFile() {
+  const fi: HTMLInputElement = <HTMLInputElement>(
+    document.getElementById('fileinput')
+  );
+
+  fi!.onchange = () => {
+    if (fi!.files && fi!.files.length > 0) {
+      console.log('Выбран файл:', fi!.files);
+      attachedFile.value = fi.files[0];
+    }
+  };
+  console.log(fi, fi.click);
+  fi.click();
 }
 
 function scrollDown() {
@@ -150,14 +221,16 @@ onBeforeUnmount(() => {
     maxScrollPosition.value = 0;
   });
 });
+
+watch(
+  () => c.currentChat?.display_name,
+  () => {
+    useMeta({ title: c.currentChat?.display_name });
+  },
+);
 </script>
 
 <style lang="scss">
-.q-message-text {
-  border-radius: 20px 20px 0px 20px;
-  padding: 15px;
-}
-
 .msg-btn {
   transition: ease-in-out 0.2s;
 }
@@ -166,15 +239,6 @@ onBeforeUnmount(() => {
   transform: rotate(-90deg);
 }
 
-.q-message-text--sent::before {
-  color: var(--q-message-bubble);
-}
-.q-message-text--sent {
-  background: var(--q-message-bubble);
-}
-.q-message-text-content--sent {
-  color: var(--q-message-bubble-text);
-}
 .no-bg {
   background: none !important;
 }

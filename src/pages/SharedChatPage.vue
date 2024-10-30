@@ -18,6 +18,7 @@
             sent
             class="q-mr-lg q-mt-lg q-mb-lg"
             bg-color="var(--q-message-bubble)"
+            style="white-space: pre-wrap"
           ></q-chat-message>
         </template>
       </template>

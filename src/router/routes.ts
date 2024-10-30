@@ -25,6 +25,11 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/SharedChatPage.vue') },
     ],
   },
+  {
+    path: '/landing',
+    component: () => import('layouts/LandingLayout.vue'),
+    children: [{ path: '', component: () => import('pages/LandingPage.vue') }],
+  },
 
   // Always leave this as last one,
   // but you can also remove it

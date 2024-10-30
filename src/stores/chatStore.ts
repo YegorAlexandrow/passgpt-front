@@ -312,8 +312,19 @@ export const useChatStore = defineStore('chatStore', () => {
     }
   }
 
+  async function fileToBase64(file: File) {
+    const reader = new FileReader();
+
+    return new Promise((resolve, reject) => {
+      reader.readAsDataURL(file);
+
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  }
+
   // Функция для инициализации чата с стримингом сообщений
-  async function sendMessage(text: string) {
+  async function sendMessage(text: string, file: File | null = null) {
     messages.value.push({
       id: undefined,
       text,
@@ -321,10 +332,10 @@ export const useChatStore = defineStore('chatStore', () => {
       progress: false,
       tool_id: undefined,
       tool_name: undefined,
+      attachments: file ? [URL.createObjectURL(file)] : undefined,
     });
 
     isMessageLoading.value = true;
-
     const response = await fetch(
       currentChatId.value
         ? `${API_BASE}/chats/${currentChatId.value}/messages`
@@ -332,7 +343,12 @@ export const useChatStore = defineStore('chatStore', () => {
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({
+          text,
+          attachments: file
+            ? [{ filename: file.name, data_str: await fileToBase64(file) }]
+            : null,
+        }),
         credentials: 'include',
       },
     );

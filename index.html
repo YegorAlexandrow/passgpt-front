@@ -1,19 +1,140 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <title><%= productName %></title>
 
-    <meta charset="utf-8">
-    <meta name="description" content="<%= productDescription %>">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (ctx.mode.cordova || ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>">
+    <meta charset="utf-8" />
+    <meta name="description" content="<%= productDescription %>" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta
+      name="viewport"
+      content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (ctx.mode.cordova || ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>"
+    />
 
-    <link rel="icon" type="image/png" sizes="128x128" href="icons/favicon-128x128.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
-    <link rel="icon" type="image/ico" href="favicon.ico">
+    <!-- SEO -->
+    <meta
+      name="title"
+      content="WowGPT - Доступ к ChatGPT от OpenAI на русском языке"
+    />
+    <meta
+      name="description"
+      content="WowGPT предоставляет доступ к мощному AI-ассистенту ChatGPT от OpenAI на русском языке. Используйте для учебы, работы и творчества без VPN и сложностей."
+    />
+    <meta
+      name="keywords"
+      content="ChatGPT, AI, OpenAI, искусственный интеллект, русский язык, помощник, генерация текста, WowGPT, GPT, нейросеть, AI на русском, доступ без VPN"
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="WowGPT Team" />
+    <meta name="language" content="Russian" />
+
+    <!-- Meta-теги для социальных сетей (Open Graph) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://wowgpt.ru" />
+    <meta
+      property="og:title"
+      content="WowGPT - Доступ к ChatGPT от OpenAI на русском языке"
+    />
+    <meta
+      property="og:description"
+      content="WowGPT предоставляет доступ к мощному AI-ассистенту ChatGPT от OpenAI на русском языке. Используйте для учебы, работы и творчества без VPN и сложностей."
+    />
+    <meta
+      property="og:image"
+      content="https://assets.wowgpt.ru/og-image-1.png"
+    />
+
+    <!-- Meta-теги для Twitter (карточки) -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://wowgpt.ru" />
+    <meta
+      property="twitter:title"
+      content="WowGPT - Доступ к ChatGPT от OpenAI на русском языке"
+    />
+    <meta
+      property="twitter:description"
+      content="WowGPT предоставляет доступ к мощному AI-ассистенту ChatGPT от OpenAI на русском языке. Используйте для учебы, работы и творчества без VPN и сложностей."
+    />
+    <meta
+      property="twitter:image"
+      content="https://assets.wowgpt.ru/og-image-1.png"
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="128x128"
+      href="icons/favicon-128x128.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="icons/favicon-96x96.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="icons/favicon-16x16.png"
+    />
+    <link rel="icon" type="image/ico" href="favicon.ico" />
+    <!-- Hotjar Tracking Code for test -->
+    <script>
+      (function (h, o, t, j, a, r) {
+        h.hj =
+          h.hj ||
+          function () {
+            (h.hj.q = h.hj.q || []).push(arguments);
+          };
+        h._hjSettings = { hjid: 5189935, hjsv: 6 };
+        a = o.getElementsByTagName('head')[0];
+        r = o.createElement('script');
+        r.async = 1;
+        r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+        a.appendChild(r);
+      })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+    </script>
+    <script type="text/javascript">
+      (function (m, e, t, r, i, k, a) {
+        m[i] =
+          m[i] ||
+          function () {
+            (m[i].a = m[i].a || []).push(arguments);
+          };
+        m[i].l = 1 * new Date();
+        for (var j = 0; j < document.scripts.length; j++) {
+          if (document.scripts[j].src === r) {
+            return;
+          }
+        }
+        (k = e.createElement(t)),
+          (a = e.getElementsByTagName(t)[0]),
+          (k.async = 1),
+          (k.src = r),
+          a.parentNode.insertBefore(k, a);
+      })(
+        window,
+        document,
+        'script',
+        'https://mc.yandex.ru/metrika/tag.js',
+        'ym',
+      );
+
+      ym(98769466, 'init', {
+        clickmap: true,
+        trackLinks: true,
+        accurateTrackBounce: true,
+        webvisor: true,
+      });
+    </script>
   </head>
   <body>
     <!-- quasar:entry-point -->

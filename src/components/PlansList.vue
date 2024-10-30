@@ -89,6 +89,10 @@ const plans = [
         icon: 'eva-checkmark',
       },
     ],
+    action: {
+      title: 'Попробовать',
+      callback: () => c.purchase('free'),
+    },
   },
   {
     _id: 'base',
@@ -176,11 +180,6 @@ const plans = [
       {
         title: 'Работа с фото',
         subtitle: 'Для анализа изображений, распознавания текста',
-        icon: 'eva-plus',
-      },
-      {
-        title: 'Работа с файлами',
-        subtitle: 'Для анализа больших текстов',
         icon: 'eva-plus',
       },
       {

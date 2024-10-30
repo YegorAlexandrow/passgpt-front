@@ -30,7 +30,10 @@
 
   <!-- Диалог для изображения -->
   <q-dialog v-model="isImageDialogOpen">
-    <q-card class="q-pa-none" style="border-radius: 26px; max-width: 90vw">
+    <q-card
+      class="q-pa-none"
+      style="border-radius: 26px; max-width: 90vw; overflow: hidden"
+    >
       <img
         :src="selectedImageSrc"
         alt="Opened Image"
@@ -189,6 +192,9 @@ const render = () => {
     props.content
       .replaceAll('\\( ', '$')
       .replaceAll(' \\)', '$')
+      .replaceAll(' \\)', '$')
+      .replaceAll('\\[ ', '$$')
+      .replaceAll(' \\]', '$$')
       .replaceAll('\\[', '$$')
       .replaceAll('\\]', '$$'),
   );
@@ -214,7 +220,7 @@ watch(
 
         if (props.inProgress) {
           const span = document.createElement('span');
-          span.innerText = '⚫';
+          span.innerText = '⬤';
           markdownContainer.value
             .querySelector(':last-child')
             ?.appendChild(span);

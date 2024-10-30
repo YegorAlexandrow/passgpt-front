@@ -2,7 +2,7 @@
   "name": "aip-front",
   "version": "0.0.1",
   "description": "aip",
-  "productName": "AIP",
+  "productName": "WowGPT",
   "author": "Yegor Alexandrov",
   "type": "module",
   "private": true,
@@ -14,6 +14,7 @@
     "build": "quasar build"
   },
   "dependencies": {
+    "@hotjar/browser": "^1.0.9",
     "@quasar/extras": "^1.16.4",
     "axios": "^1.7.7",
     "clipboard": "^2.0.11",

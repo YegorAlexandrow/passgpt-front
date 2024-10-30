@@ -120,6 +120,7 @@ export default configure((ctx) => {
           pathRewrite: { '^/api': '' },
         },
       },
+      host: '0.0.0.0',
       open: true, // opens browser window automatically
     },
 
@@ -138,7 +139,7 @@ export default configure((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Dialog', 'Notify'],
+      plugins: ['Dialog', 'Notify', 'Meta'],
     },
 
     // animations: 'all', // --- includes all animations
