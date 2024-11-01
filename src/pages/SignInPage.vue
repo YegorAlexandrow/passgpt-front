@@ -9,6 +9,7 @@
       >
         <q-card-section class="text-center">
           <div class="text-h4 q-mb-lg">Вход и регистрация</div>
+          <div class="text-body1">Представьтесь, чтобы продолжить:</div>
         </q-card-section>
         <q-card-section class="column">
           <q-separator></q-separator>
@@ -21,9 +22,10 @@
           </template>
         </q-card-section>
         <q-card-section class="text-caption">
-          Продолжая, даю <a href="#">согласие</a> на обработку персональных
-          данных и соглашаюсь с <a href="#">политикой</a> обработки персональных
-          данных
+          Продолжая, я принимаю условия
+          <a href="https://wowgpt.ru/offer">Договора об оказании услуг</a> и даю
+          согласие на обработку моих персональных данных в соответствии с
+          <a href="https://wowgpt.ru/privacy">Политикой конфиденциальности</a>
         </q-card-section>
       </q-card>
     </q-page>
@@ -56,11 +58,11 @@ const options = ref([
     display: 'Mail.ru',
     logoPath: '/images/logo_mailru.svg',
   },
-  {
-    provider: 'vk',
-    display: 'Одноклассники',
-    logoPath: '/images/logo_ok.svg',
-  },
+  // {
+  //   provider: 'vk',
+  //   display: 'Одноклассники',
+  //   logoPath: '/images/logo_ok.svg',
+  // },
 ]);
 </script>
 <style lang="scss" scoped>

@@ -26,7 +26,7 @@ export const useChatStore = defineStore('chatStore', () => {
   const $q = useQuasar();
 
   const currentChat = computed((): Chat | undefined => {
-    console.log(currentChatId.value);
+    // console.log(currentChatId.value);
     if (!currentChatId.value) return undefined;
     return chats.value.find((c) => c.id == currentChatId.value);
   });
@@ -179,11 +179,15 @@ export const useChatStore = defineStore('chatStore', () => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      const errorMessage =
-        errorData.detail ||
-        'Не удалось выполнить покупку. Пожалуйста, попробуйте снова.';
-      createErrorNotification(errorMessage);
+      if (response.status == 401) {
+        location.href = '/login';
+      } else {
+        const errorData = await response.json();
+        const errorMessage =
+          errorData.detail ||
+          'Не удалось выполнить покупку. Пожалуйста, попробуйте снова.';
+        createErrorNotification(errorMessage);
+      }
     } else {
       const resp = await response.json();
       window.location.href = resp.payment_url;
@@ -205,11 +209,18 @@ export const useChatStore = defineStore('chatStore', () => {
 
       if (response.ok) {
         const resp = await response.json();
-        createErrorNotification(resp.message, 'info');
+        createErrorNotification(resp.message, 'primary');
       }
     } catch (e) {
       createErrorNotification('Произошла ошибка во время подписки.');
     }
+  }
+
+  async function checkHealth() {
+    await fetch(`${API_BASE}/health`, {
+      method: 'GET',
+      credentials: 'include',
+    });
   }
 
   async function deleteChat(chatId: string) {
@@ -372,7 +383,7 @@ export const useChatStore = defineStore('chatStore', () => {
         .read()
         .then(({ done, value }) => {
           if (done) {
-            console.log('Stream finished');
+            // console.log('Stream finished');
             isMessageLoading.value = false;
             return;
           }
@@ -449,7 +460,7 @@ export const useChatStore = defineStore('chatStore', () => {
         }
         break;
       case 'done':
-        console.log('Message fully received:', data.text);
+        // console.log('Message fully received:', data.text);
         const message1 = messages.value[messages.value.length - 1];
         if (message1) {
           message1.text = data.text + '\n';
@@ -477,7 +488,7 @@ export const useChatStore = defineStore('chatStore', () => {
         break;
       case 'tool_result':
         const msg2 = messages.value.find((m) => m.tool_id == data.tool_id);
-        console.log(msg2);
+        // console.log(msg2);
         if (msg2) {
           msg2.progress = false;
         }
@@ -521,5 +532,6 @@ export const useChatStore = defineStore('chatStore', () => {
     cancelSubscription,
     subscribeEmail,
     fetchSharedChatMessages,
+    checkHealth,
   };
 });

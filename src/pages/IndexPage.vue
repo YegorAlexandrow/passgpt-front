@@ -6,7 +6,7 @@
         !c.isMessageLoading &&
         !c.isChatLoading
       "
-      class="col"
+      style="height: calc(100vh - 200px)"
     ></WelcomeScreen>
     <div
       class="col q-px-md"
@@ -40,7 +40,7 @@
         </template>
       </template>
     </div>
-    <div style="height: 400px">
+    <div style="height: 400px" v-if="c.messages.length > 0">
       <q-inner-loading class="no-bg" :showing="c.isChatLoading">
         <q-spinner-hourglass size="sm"></q-spinner-hourglass>
         Загружаем сообщения
@@ -110,7 +110,7 @@
             :style="{
               width: '48px',
               aspectRatio: '1 / 1',
-              borderRadius: '8px',
+              borderRadius: '9px',
               background: `url(${attachedFileUrl})`,
               backgroundSize: 'cover',
               position: 'relative',
@@ -122,7 +122,7 @@
               icon="close"
               color="negative"
               size="xs"
-              style="position: absolute; top: 0; right: 0"
+              style="position: absolute; top: -4px; right: -4px"
               @click="attachedFile = null"
             />
           </div>
@@ -133,10 +133,11 @@
             round
             flat
             icon="send"
+            @touchstart="sendMessage"
             @click="sendMessage"
             :loading="c.isMessageLoading"
             :disable="newMessageText.length < 1"
-            style="transform: translateX(4px); z-index: 1000"
+            style="transform: translateX(4px); z-index: 8000"
           >
             <q-tooltip> CTRL + ENTER </q-tooltip>
           </q-btn>
@@ -188,7 +189,7 @@ function attachFile() {
 
   fi!.onchange = () => {
     if (fi!.files && fi!.files.length > 0) {
-      console.log('Выбран файл:', fi!.files);
+      // console.log('Выбран файл:', fi!.files);
       attachedFile.value = fi.files[0];
     }
   };

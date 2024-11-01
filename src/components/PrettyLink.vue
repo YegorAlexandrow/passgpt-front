@@ -2,9 +2,10 @@
   <a v-if="to.startsWith('http')" :href="to" :target="target">
     <q-chip
       dense
+      flat
       :icon-right="icon"
       text-color="info"
-      class="q-pa-none q-ma-none"
+      class="q-pa-none q-ma-none bg-transparent"
       >{{ label }}</q-chip
     >
   </a>

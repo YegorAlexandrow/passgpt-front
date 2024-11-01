@@ -93,7 +93,15 @@
           </p>
           <BuyButton></BuyButton>
           <q-space></q-space>
-          <q-btn color="negative" outline rounded @click="showCancelDialog"
+          <q-btn
+            v-if="
+              !['free', 'daily_boost'].includes(c.currentSubscription.type) &&
+              c.currentSubscription.status == 'active'
+            "
+            color="negative"
+            outline
+            rounded
+            @click="showCancelDialog"
             >Отменить продление</q-btn
           >
         </q-card-section>
@@ -220,8 +228,7 @@ function showCancelDialog() {
       color: 'primary',
       flat: true,
     },
-  }).onOk((x) => {
-    console.log(x);
+  }).onOk(() => {
     c.cancelSubscription();
   });
 }

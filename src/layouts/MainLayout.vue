@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh LpR lFf">
     <q-header style="background: none">
-      <q-toolbar>
+      <q-toolbar class="blurry">
         <q-btn
           icon="eva-menu-arrow-outline"
           size="md"
@@ -42,9 +42,16 @@
     <q-drawer
       show-if-above
       v-model="leftDrawerOpen"
+      bordered
       side="left"
       class="column q-mr-sm q-pt-xl"
     >
+      <div
+        v-if="!c.isChatListLoading && c.chats.length == 0"
+        class="text-center text-body1 q-my-auto text-primary"
+      >
+        Здесь будут ваши чаты🗨️
+      </div>
       <q-item-list>
         <q-item
           v-for="chat in c.chats"

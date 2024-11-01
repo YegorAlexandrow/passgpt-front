@@ -189,7 +189,7 @@
         >Начать сейчас!</q-btn
       >
     </section>
-    <section class="app-part-screen snap-center q-pa-lg bg-secondary q-pt-xl">
+    <section class="app-part-screen snap-center bg-secondary q-pt-xl">
       <div id="plans" class="w-h1 text-center q-pb-xl">
         Выберите подходящий тариф
       </div>
@@ -246,7 +246,12 @@
     </section>
     <footer class="app-part-screen row text-center q-pt-xl q-pb-md">
       <p class="col column">
-        <a href="#" class="q-mt-auto">Пользовательское соглашение</a>
+        <a href="https://wowgpt.ru/offer" class="q-mt-auto"
+          >Пользовательское соглашение</a
+        >
+        <a href="https://wowgpt.ru/privacy" class=""
+          >Политика конфиденциальности</a
+        >
       </p>
       <p class="col column">
         <a href="mailto:hello@wowgpt.ru" class="q-mt-auto">hello@wowgpt.ru</a>
@@ -275,12 +280,16 @@ import SpiralText from 'src/components/SpiralText.vue';
 import ExpandableContainer from 'src/components/ExpandableContainer.vue';
 import FadeInContainer from 'src/components/FadeInContainer.vue';
 import StairsText from 'src/components/StairsText.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useChatStore } from 'src/stores/chatStore';
 
 const appLink = ref('/');
 const loginLink = ref('/login');
+const c = useChatStore();
 
-// import TestPage from 'src/pages/TestPage.vue';
+onMounted(() => {
+  c.checkHealth();
+});
 </script>
 <style lang="scss">
 .button-gradient {
@@ -422,8 +431,8 @@ footer a {
   .mobile-title {
     width: 100%;
     max-width: unset;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 16px;
+    padding-right: 16px;
     margin-bottom: 16px;
     order: -1;
     text-align: center;
@@ -438,6 +447,11 @@ footer a {
   .w-h3 {
     font-weight: 600;
     font-size: 24px;
+  }
+
+  .w-h1 {
+    font-weight: 800;
+    font-size: 48px;
   }
 
   .conversation {

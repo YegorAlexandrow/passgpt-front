@@ -119,6 +119,12 @@ export default configure((ctx) => {
           secure: true,
           pathRewrite: { '^/api': '' },
         },
+        '/health': {
+          target: 'http://localhost:8956',
+          changeOrigin: false,
+          secure: true,
+          pathRewrite: { '^/api': '' },
+        },
       },
       host: '0.0.0.0',
       open: true, // opens browser window automatically
