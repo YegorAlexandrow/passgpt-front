@@ -6,10 +6,22 @@
   </q-layout>
 </template>
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
+import { useMeta, useQuasar } from 'quasar';
+import { onMounted } from 'vue';
 
 const $q = useQuasar();
 
-const theme = localStorage.getItem('theme') || 'system';
-$q.dark.set(theme == 'system' ? 'auto' : theme == 'dark');
+onMounted(() => {
+  const theme = localStorage.getItem('theme') || 'system';
+  $q.dark.set(theme == 'system' ? 'auto' : theme == 'dark');
+});
+
+useMeta({
+  meta: {
+    themeColor: {
+      name: 'theme-color',
+      content: $q.dark.isActive ? '#171717' : '#b388ff',
+    },
+  },
+});
 </script>

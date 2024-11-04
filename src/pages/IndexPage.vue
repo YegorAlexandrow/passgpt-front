@@ -193,7 +193,7 @@ function attachFile() {
       attachedFile.value = fi.files[0];
     }
   };
-  console.log(fi, fi.click);
+  // console.log(fi, fi.click);
   fi.click();
 }
 

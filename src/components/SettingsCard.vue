@@ -1,16 +1,25 @@
 <template>
   <q-card flat style="width: min(640px, 98vw); border-radius: 20px">
-    <div class="card-header">
+    <div class="card-header row">
       <q-tabs
         v-model="selectedTab"
-        class="wrap-tabs"
+        class="wrap-tabs col"
         active-color="primary"
         indicator-color="primary"
       >
         <q-tab name="general" label="Общие" />
-        <q-tab name="activeSubscription" label="Активная подписка" />
-        <q-tab name="subscriptionsHistory" label="История подписок" />
+        <q-tab name="activeSubscription" label="Подписка" />
+        <q-tab name="subscriptionsHistory" label="История" />
       </q-tabs>
+      <q-btn
+        dense
+        round
+        icon="close"
+        color="primary"
+        size="sm"
+        class="q-mx-sm"
+        @click="emit('close')"
+      />
     </div>
 
     <q-separator />
@@ -177,6 +186,8 @@ import PrettyLink from 'src/components/PrettyLink.vue';
 import BuyButton from 'src/components/BuyButton.vue';
 import { Dark } from 'quasar';
 import { useChatStore } from 'src/stores/chatStore';
+
+const emit = defineEmits(['close']);
 
 const $q = useQuasar();
 const c = useChatStore();

@@ -1,8 +1,30 @@
 import { RouteRecordRaw } from 'vue-router';
 
+console.log('@@', process.env);
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
+    component: () =>
+      import(
+        process.env.INDEX_PAGE == 'chat'
+          ? 'layouts/MainLayout.vue'
+          : 'layouts/LandingLayout.vue'
+      ),
+    children: [
+      {
+        path: '',
+        component: () =>
+          import(
+            process.env.INDEX_PAGE == 'chat'
+              ? 'pages/IndexPage.vue'
+              : 'pages/LandingPage.vue'
+          ),
+      },
+    ],
+  },
+  {
+    path: '/chat',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
   },

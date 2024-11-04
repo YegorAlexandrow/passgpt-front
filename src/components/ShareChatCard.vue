@@ -36,7 +36,7 @@ import QRCodeStyling from 'qr-code-styling';
 const props = defineProps({
   link: {
     type: String,
-    default: 'http://localhost:9001/?s=33fa7152-4318-4d3a-92ce-339404d57d32',
+    default: '#',
   },
 });
 

@@ -68,7 +68,7 @@
     </q-menu>
   </q-avatar>
   <q-dialog v-model="showSettings">
-    <SettingsCard></SettingsCard>
+    <SettingsCard @close="onCloseSettings"></SettingsCard>
   </q-dialog>
 </template>
 <script setup lang="ts">
@@ -79,6 +79,10 @@ import SettingsCard from 'src/components/SettingsCard.vue';
 const c = useChatStore();
 
 const showSettings = ref(false);
+
+function onCloseSettings() {
+  showSettings.value = false;
+}
 
 function getSubDisplayName(sub: string) {
   return (

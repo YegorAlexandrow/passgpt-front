@@ -129,7 +129,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useChatStore } from 'src/stores/chatStore';
-import { useQuasar } from 'quasar';
+import { useMeta, useQuasar } from 'quasar';
 import UserBadge from 'src/components/UserBadge.vue';
 import BuyButton from 'src/components/BuyButton.vue';
 import ShareChatCard from 'src/components/ShareChatCard.vue';
@@ -211,10 +211,10 @@ const isMobile = () => {
   );
 };
 
-const theme = localStorage.getItem('theme') || 'system';
-$q.dark.set(theme == 'system' ? 'auto' : theme == 'dark');
-
 onMounted(async () => {
+  const theme = localStorage.getItem('theme') || 'system';
+  $q.dark.set(theme == 'system' ? 'auto' : theme == 'dark');
+
   const urlParams = new URLSearchParams(window.location.search);
   const chatId = urlParams.get('c');
   if (chatId) c.fetchChatMessages(chatId);
@@ -228,6 +228,20 @@ onMounted(async () => {
     router.push('/login');
   }
 });
+
+watch(
+  () => $q.dark.isActive,
+  () => {
+    useMeta({
+      meta: {
+        themeColor: {
+          name: 'theme-color',
+          content: $q.dark.isActive ? '#171717' : '#b388ff',
+        },
+      },
+    });
+  },
+);
 </script>
 <style>
 /* Контейнер для элемента списка */

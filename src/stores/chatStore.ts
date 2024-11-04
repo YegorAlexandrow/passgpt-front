@@ -5,8 +5,7 @@ import { Message } from 'src/models/Message';
 import { Subscription, User } from 'src/models/User';
 import { useQuasar } from 'quasar';
 
-const API_BASE = '';
-// const API_BASE = 'https://aip-1-862975568974.us-central1.run.app';
+const API_BASE = process.env.API_BASE;
 
 export const useChatStore = defineStore('chatStore', () => {
   const chats = ref<Chat[]>([]);
@@ -314,7 +313,7 @@ export const useChatStore = defineStore('chatStore', () => {
       const delta =
         currentSubscription.value?.message_per_day_limit -
         currentSubscription.value.messages_in_last_day;
-      if (delta < 5) {
+      if (delta <= 3) {
         createErrorNotification(
           `У Вас осталось ${delta} ${getDeclensionOfMessages(delta)} на сегодня.<br/>
           Вы можете <a href="/test">повысить уровень подписки</a>`,

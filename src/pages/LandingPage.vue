@@ -3,58 +3,57 @@
     <img
       id="logo-header"
       src="/images/logo1.svg"
+      v-if="!isMobile()"
       style="height: 100%; padding: 6px; padding-left: 12px"
     />
+    <q-btn class="col q-px-none" @click="scrollTo('cases')" flat
+      >Что может</q-btn
+    >
+    <q-btn class="col q-px-none" @click="scrollTo('plans')" flat>Тарифы</q-btn>
+    <q-btn class="col q-px-none" @click="scrollTo('faq')" flat>Вопросы</q-btn>
     <q-space></q-space>
     <q-btn
       id="btn-start-navbar"
-      :to="appLink"
-      class="button-gradient w-boxy q-mx-md"
+      @click="openApp"
+      class="button-gradient q-mx-sm"
       rounded
     >
       Войти
     </q-btn>
   </header>
   <main>
-    <section class="app-screen row">
-      <!-- <TestPage style="position: absolute; z-index: -1"></TestPage> -->
-      <div
-        class="column blurry q-pl-xl q-pr-md"
-        style="max-width: 820px; border-radius: 0 0 40px 0"
-      >
-        <q-space></q-space>
-        <div id="hero" class="w-h1">WowGPT</div>
-        <div class="w-h3">Доступ к ChatGPT на русском языке</div>
-        <div class="w-body q-mt-lg">
-          Для учёбы, работы и творчества<br />
-          Удобный доступ, русский язык<br />
-          Никаких VPN, зарубежных карт и номеров
-        </div>
-        <div class="q-mt-xl">
-          <q-btn
-            id="btn-start-hero"
-            :to="loginLink"
-            class="button-gradient w-h3 q-px-lg"
-            rounded
-            >Начать сейчас</q-btn
-          >
-        </div>
-        <q-space></q-space>
+    <section class="app-screen column text-center hero">
+      <q-space></q-space>
+      <div id="hero" class="w-h1 q-px-md">WowGPT</div>
+      <div class="w-h3 q-mb-xl q-px-md">Доступ к ChatGPT на русском языке</div>
+      <AnimatedInput
+        class="w-h2 q-mb-xl q-mt-md q-mx-auto animated-input"
+      ></AnimatedInput>
+      <div class="w-body q-mt-md q-px-md">
+        Для учёбы, работы и творчества<br />
+        Удобный доступ, русский язык<br />
+        Никаких VPN, зарубежных карт и номеров
       </div>
-      <SpiralText
-        class="col"
-        style="
-          position: absolute;
-          width: 100vh;
-          aspect-ratio: 1 / 1;
-          right: 0;
-          top: 50vh;
-          z-index: -1;
-          opacity: 0.5;
-        "
-        text-content="///////ИДЕИ РАСКРУЧИВАЮТСЯ. ДОСТУП К CHATGPT ОТ OPENAI. ПОГРУЗИТЕСЬ В СПИРАЛЬ ВОЗМОЖНОСТЕЙ И ОТКРОЙТЕ ДЛЯ СЕБЯ ИСКУССТВЕННЫЙ ИНТЕЛЛЕКТ БЕЗ ОГРАНИЧЕНИЙ"
-      ></SpiralText>
+      <div class="q-mt-xl">
+        <q-btn
+          id="btn-start-hero"
+          @click="openApp()"
+          class="button-gradient w-h3 q-px-lg"
+          rounded
+          >Начать сейчас</q-btn
+        >
+      </div>
+      <q-space></q-space>
     </section>
+    <div class="row">
+      <q-icon
+        name="eva-arrow-down-outline"
+        size="lg"
+        class="q-mx-auto arrow-shake"
+        style="position: relative; bottom: 60px; cursor: pointer"
+        @click="scrollTo('cases')"
+      ></q-icon>
+    </div>
     <section class="app-part-screen snap-start row q-py-xl">
       <div class="col column q-pl-lg q-pr-md">
         <q-space></q-space>
@@ -135,7 +134,7 @@
     <section class="text-center q-my-lg">
       <q-btn
         id="btn-start-cases"
-        :to="loginLink"
+        @click="openApp()"
         class="button-gradient w-h3 q-px-lg"
         rounded
         >Попробовать</q-btn
@@ -145,7 +144,7 @@
     <section class="app-part-screen snap-start column q-py-xl">
       <div id="features" class="w-h1 q-py-xl text-center">Почему WowGPT?</div>
       <StairsText
-        style="position: absolute; width: 100%; opacity: 0.5"
+        style="position: absolute; width: 100%; opacity: 0.5; z-index: -1"
         font-size="36"
         text-content="ПРОСТОТА ДОСТУПА .... ПОДДЕРЖКА РУССКОГО ЯЗЫКА ... ГИБКИЕ ТАРИФЫ .. РАБОТА .. WOWGPT ... CHATGPT .. УЧЁБА .. CHATGPT // ТВОРЧЕСТВО // КАЖДЫЙ ШАГ - НОВАЯ ВОЗМОЖНОСТЬ"
       ></StairsText>
@@ -183,7 +182,7 @@
       </div>
       <q-btn
         id="btn-start-heart"
-        :to="loginLink"
+        @click="openApp()"
         class="button-gradient w-h3 q-px-lg q-my-xl"
         rounded
         >Начать сейчас!</q-btn
@@ -193,7 +192,7 @@
       <div id="plans" class="w-h1 text-center q-pb-xl">
         Выберите подходящий тариф
       </div>
-      <PlansList :show-free="true"></PlansList>
+      <PlansList :show-free="true" :for-landing="true"></PlansList>
     </section>
     <section
       class="app-part-screen snap-start q-pa-xl q-mt-xl column"
@@ -238,7 +237,7 @@
 
       <q-btn
         id="btn-start-final"
-        :to="loginLink"
+        @click="openApp()"
         class="button-gradient w-h3 q-px-lg q-my-xl q-ml-lg q-mr-auto"
         rounded
         >Попробовать</q-btn
@@ -276,16 +275,40 @@ import features from 'src/assets/features';
 import ToolLabel from 'src/components/ToolLabel.vue';
 import SinusText from 'src/components/SinusText.vue';
 import HeartText from 'src/components/HeartText.vue';
-import SpiralText from 'src/components/SpiralText.vue';
 import ExpandableContainer from 'src/components/ExpandableContainer.vue';
 import FadeInContainer from 'src/components/FadeInContainer.vue';
 import StairsText from 'src/components/StairsText.vue';
 import { onMounted, ref } from 'vue';
 import { useChatStore } from 'src/stores/chatStore';
+import AnimatedInput from 'src/components/AnimatedInput.vue';
 
-const appLink = ref('/');
-const loginLink = ref('/login');
+const appLink = ref('https://ask.wowgpt.ru');
+// const loginLink = ref('/login');
 const c = useChatStore();
+
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent,
+  );
+};
+
+function openApp() {
+  location.href = appLink.value;
+}
+
+function scrollTo(id: string) {
+  const el = document.getElementById(id);
+
+  if (el) {
+    const elementPosition = el.getBoundingClientRect().top + window.scrollY;
+
+    // Прокручиваем страницу с учётом оффсета
+    window.scrollTo({
+      top: elementPosition - 60, // Отнимаем оффсет от позиции элемента
+      behavior: 'smooth', // Плавная прокрутка
+    });
+  }
+}
 
 onMounted(() => {
   c.checkHealth();
@@ -366,9 +389,20 @@ body {
   box-sizing: border-box;
 }
 
+.hero {
+  background-image: url('/images/bg6.webp');
+  background-size: cover;
+  background-position: top;
+}
+
 .w-h1 {
   font-weight: 900;
   font-size: 54px;
+}
+
+.w-h2 {
+  font-weight: 600;
+  font-size: 36px;
 }
 
 .w-h3 {
@@ -427,7 +461,41 @@ footer a {
   color: white;
 }
 
+.arrow-shake {
+  animation: moveUpDown 1.5s ease-in-out infinite; /* Анимация */
+}
+
+.q-field__control:before {
+  border: 3px solid var(--q-primary) !important;
+}
+
+@keyframes moveUpDown {
+  0% {
+    transform: translateY(20%);
+  }
+  50% {
+    transform: translateY(-20%); /* Возврат в исходное положение */
+  }
+  100% {
+    transform: translateY(20%); /* Возврат в исходное положение */
+  }
+}
+
+.q-field__control {
+  height: unset;
+}
+
+.animated-input {
+  min-width: 60vw;
+  max-width: 820px;
+}
+
 @media (max-width: 600px) {
+  .animated-input {
+    min-width: 90vw;
+    max-width: 95vw;
+  }
+
   .mobile-title {
     width: 100%;
     max-width: unset;
@@ -444,14 +512,26 @@ footer a {
   .app-part-screen {
     flex-direction: column;
   }
+
+  .w-h2 {
+    font-weight: 600;
+    font-size: 22px;
+  }
+
   .w-h3 {
     font-weight: 600;
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .w-h1 {
     font-weight: 800;
-    font-size: 48px;
+    font-size: 36px;
+  }
+
+  .w-body {
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 2.25rem;
   }
 
   .conversation {

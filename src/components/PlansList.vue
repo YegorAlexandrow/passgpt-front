@@ -44,7 +44,7 @@
           <q-btn
             class="col q-py-md text-h6"
             color="primary"
-            @click="plan.action.callback"
+            @click="props.forLanding ? goToApp() : plan.action.callback()"
             unelevated
             rounded
           >
@@ -61,10 +61,18 @@ import { computed } from 'vue';
 
 const c = useChatStore();
 
+function goToApp() {
+  location.href = 'https://ask.wowgpt.ru';
+}
+
 const props = defineProps({
   showFree: {
     type: Boolean,
     default: true,
+  },
+  forLanding: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -157,7 +165,7 @@ const plans = [
     ],
     action: {
       title: 'Выбрать',
-      callback: () => c.purchase('base'),
+      callback: () => c.purchase('dailyy_boost'),
     },
   },
   {

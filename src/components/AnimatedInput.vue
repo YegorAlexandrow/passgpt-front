@@ -1,28 +1,17 @@
 <template>
-  <div class="column justify-center text-center">
-    <div class="text-h2 text-primary q-mb-lg">Привет!</div>
-    <div class="text-h4">Чем Вам помочь?</div>
-    <div class="row q-mt-xl">
-      <q-card
-        v-for="p in pickedPropmpts"
-        :key="p.text"
-        class="col q-mx-sm prompt-card"
-        style="border-radius: 20px"
-        flat
-        bordered
-        @click="c.sendMessage(p.text)"
-      >
-        <q-card-section class="text-h4 q-pb-none">{{ p.emoji }}</q-card-section>
-        <q-card-section>{{ p.text }}</q-card-section>
-      </q-card>
-    </div>
-  </div>
+  <q-input
+    v-model="newMessageText"
+    rounded
+    outlined
+    type="text"
+    placeholder="Ваше сообщение..."
+    input-style="padding-left: 12px; padding-bottom: 12px;"
+  >
+  </q-input>
 </template>
-<script setup>
-import { ref } from 'vue';
-import { useChatStore } from 'src/stores/chatStore';
 
-const c = useChatStore();
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 
 const prompts = [
   { emoji: '📚', text: 'Подготовь задания для изучения слов' },
@@ -38,7 +27,7 @@ const prompts = [
   { emoji: '🎧', text: 'Подбери плейлист для работы' },
   { emoji: '💼', text: 'Помоги написать резюме' },
   { emoji: '💬', text: 'Составь текст для презентации' },
-  { emoji: '🌍', text: 'Расскажи про интересные места в мире' },
+  { emoji: '🌍', text: 'Интересные места в мире' },
   { emoji: '👨‍🍳', text: 'Предложи оригинальное блюдо' },
   { emoji: '📅', text: 'Запланируй неделю' },
   { emoji: '🎤', text: 'Помоги подготовить речь' },
@@ -47,29 +36,58 @@ const prompts = [
   { emoji: '🏖️', text: 'Организуй отпуск' },
   { emoji: '💼', text: 'Подготовь к собеседованию' },
   { emoji: '🎁', text: 'Посоветуй подарок' },
-  { emoji: '🛋️', text: 'Предложи идеи для декора комнаты' },
+  { emoji: '🛋️', text: 'Предложи идеи для декора' },
   { emoji: '✈️', text: 'Построй маршрут путешествия' },
-  { emoji: '📄', text: 'Упростить объяснение в сложном документе' }, // замена
+  { emoji: '📄', text: 'Объясни сложный документ' }, // замена
   { emoji: '🛠️', text: 'Объясни, как настроить гаджеты' }, // замена
-  { emoji: '🦸‍♂️', text: 'Придумай персонажа супергероя' }, // замена
-  { emoji: '✈️', text: 'Советы для поездки в новую страну' }, // замена
-  { emoji: '💬', text: 'Советы для уверенного выступления' }, // замена
+  { emoji: '🦸‍♂️', text: 'Придумай супергероя' }, // замена
+  { emoji: '✈️', text: 'Дай советы для поездки в новую страну' }, // замена
+  { emoji: '💬', text: 'Дай советы для выступления' }, // замена
+
+  { emoji: '✈️', text: 'Рассчитай сложные проценты' },
+  { emoji: '✈️', text: 'Напиши стихотворение о любви?' },
+  { emoji: '✈️', text: 'Где хорошая погода на выходных?' },
+  { emoji: '✈️', text: 'Изобрази Москву в стиле Дали' },
+  { emoji: '✈️', text: 'Как написать функцию на Python...' },
+  { emoji: '✈️', text: 'Объясни, как решить интеграл' },
 ];
+
+const newMessageText = ref('');
+const targetText = ref(prompts[0].text);
 
 function getRandomPrompts(count = 3) {
   const shuffled = prompts.sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
 }
 
-const pickedPropmpts = ref(getRandomPrompts());
+onMounted(() => {
+  let index = 0;
+  let phase = 1;
+  const caret = '⬤';
+
+  function typeText() {
+    if (index >= targetText.value.length + 10) {
+      phase = -1;
+    }
+
+    if (index <= 1) {
+      targetText.value = getRandomPrompts(1)[0].text;
+      phase = 1;
+    }
+
+    newMessageText.value = targetText.value.substring(0, index + phase) + caret;
+    index += phase;
+    setTimeout(typeText, 42);
+  }
+  typeText();
+});
 </script>
-<style scoped>
-.prompt-card {
-  cursor: pointer;
+<style>
+.msg-btn {
   transition: ease-in-out 0.2s;
 }
 
-.prompt-card:hover {
-  transform: rotate(-7deg);
+.msg-btn:hover {
+  transform: rotate(-90deg);
 }
 </style>

@@ -5,6 +5,9 @@
 
 import { configure } from 'quasar/wrappers';
 import { fileURLToPath } from 'node:url';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export default configure((ctx) => {
   return {
@@ -35,6 +38,11 @@ export default configure((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
+      env: {
+        API_BASE: process.env.API_BASE || '',
+        INDEX_PAGE: process.env.INDEX_PAGE || 'chat',
+      },
+
       target: {
         browser: ['es2022', 'firefox115', 'chrome115', 'safari14'],
         node: 'node20',

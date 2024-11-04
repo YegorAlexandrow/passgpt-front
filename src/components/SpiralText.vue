@@ -46,7 +46,7 @@
       </defs>
       <!-- Text & link to path -->
       <text
-        :font-weight="700"
+        :font-weight="900"
         :font-family="fontFamily"
         :font-size="fontSize"
         fill="url(#spiralGradient)"
@@ -101,7 +101,7 @@ onMounted(() => {
   const caret = '⬤';
 
   function typeText() {
-    if (index < 0 || index >= fullText.length + 2) phase *= -1;
+    if (index < 0 || index >= fullText.length + 2) phase = 0;
     if (textElement) {
       textElement.textContent = fullText.substring(0, index + phase) + caret;
       index += phase;

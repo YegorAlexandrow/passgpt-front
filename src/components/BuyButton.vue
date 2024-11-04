@@ -21,7 +21,21 @@
     </template>
 
     <q-dialog v-model="isShowPlans" full-width>
-      <PlansList class="q-pa-none" :show-free="false"></PlansList>
+      <div>
+        <div class="row">
+          <q-space></q-space>
+          <q-btn
+            dense
+            round
+            icon="close"
+            color="primary"
+            size="sm"
+            class="q-mx-sm"
+            @click="isShowPlans = false"
+          />
+        </div>
+        <PlansList class="q-pa-none" :show-free="false"></PlansList>
+      </div>
     </q-dialog>
   </q-btn>
 </template>
