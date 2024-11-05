@@ -11,6 +11,7 @@
     <q-btn
       v-if="!expanded"
       @click="expandContent"
+      class="arrow-shake"
       label="Развернуть"
       icon="eva-arrow-ios-downward-outline"
       flat
@@ -74,5 +75,21 @@ onMounted(() => {
   max-height: 1000px;
   mask-image: none;
   -webkit-mask-image: none;
+}
+
+.arrow-shake {
+  animation: moveUpDown 2s ease-in-out infinite; /* Анимация */
+}
+
+@keyframes moveUpDown {
+  0% {
+    transform: translateY(15%);
+  }
+  50% {
+    transform: translateY(-15%); /* Возврат в исходное положение */
+  }
+  100% {
+    transform: translateY(15%); /* Возврат в исходное положение */
+  }
 }
 </style>

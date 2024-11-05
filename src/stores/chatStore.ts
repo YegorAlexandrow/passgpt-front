@@ -22,6 +22,8 @@ export const useChatStore = defineStore('chatStore', () => {
   const currentSubscription = ref<Subscription | null>(null);
   const subscriptionHistory = ref<Subscription[]>([]);
 
+  const showSignInForm = ref(false);
+
   const $q = useQuasar();
 
   const currentChat = computed((): Chat | undefined => {
@@ -160,11 +162,16 @@ export const useChatStore = defineStore('chatStore', () => {
 
   async function listChats() {
     isChatListLoading.value = true;
-    const response = await fetch(`${API_BASE}/chats`, {
-      method: 'GET',
-      credentials: 'include',
-    });
-    chats.value = await response.json();
+    try {
+      const response = await fetch(`${API_BASE}/chats`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      chats.value = await response.json();
+    } catch (e) {
+      console.log(e);
+      chats.value = [];
+    }
     isChatListLoading.value = false;
   }
 
@@ -179,7 +186,7 @@ export const useChatStore = defineStore('chatStore', () => {
 
     if (!response.ok) {
       if (response.status == 401) {
-        location.href = '/login';
+        showSignInForm.value = true;
       } else {
         const errorData = await response.json();
         const errorMessage =
@@ -346,6 +353,26 @@ export const useChatStore = defineStore('chatStore', () => {
     });
 
     isMessageLoading.value = true;
+
+    if (currentUser.value == null) {
+      messages.value.push({
+        id: undefined,
+        text: '',
+        role: 'assistant',
+        progress: true,
+        tool_id: undefined,
+        tool_name: undefined,
+      });
+      localStorage.setItem('stagedMessage', text);
+      setTimeout(() => {
+        showSignInForm.value = true;
+        isMessageLoading.value = false;
+      }, 800);
+      return;
+    }
+
+    localStorage.removeItem('stagedMessage');
+
     const response = await fetch(
       currentChatId.value
         ? `${API_BASE}/chats/${currentChatId.value}/messages`
@@ -517,6 +544,7 @@ export const useChatStore = defineStore('chatStore', () => {
     currentUser,
     currentSubscription,
     subscriptionHistory,
+    showSignInForm,
     sendMessage,
     listChats,
     fetchChatMessages,

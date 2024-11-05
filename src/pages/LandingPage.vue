@@ -9,8 +9,8 @@
     <q-btn class="col q-px-none" @click="scrollTo('cases')" flat
       >Что может</q-btn
     >
-    <q-btn class="col q-px-none" @click="scrollTo('plans')" flat>Тарифы</q-btn>
     <q-btn class="col q-px-none" @click="scrollTo('faq')" flat>Вопросы</q-btn>
+    <q-btn class="col q-px-none" @click="scrollTo('plans')" flat>Линейка</q-btn>
     <q-space></q-space>
     <q-btn
       id="btn-start-navbar"
@@ -29,19 +29,20 @@
       <AnimatedInput
         class="w-h2 q-mb-xl q-mt-md q-mx-auto animated-input"
       ></AnimatedInput>
-      <div class="w-body q-mt-md q-px-md">
-        Для учёбы, работы и творчества<br />
-        Удобный доступ, русский язык<br />
-        Никаких VPN, зарубежных карт и номеров
-      </div>
-      <div class="q-mt-xl">
+      <div class="">
         <q-btn
           id="btn-start-hero"
           @click="openApp()"
-          class="button-gradient w-h3 q-px-lg"
+          class="button-gradient w-body q-px-lg"
           rounded
-          >Начать сейчас</q-btn
         >
+          Запустить ✨</q-btn
+        >
+      </div>
+      <div class="w-body q-mt-xl q-px-md">
+        Для учёбы, работы и творчества<br />
+        Удобный доступ, русский язык<br />
+        Никаких VPN, зарубежных карт и номеров
       </div>
       <q-space></q-space>
     </section>
@@ -195,8 +196,7 @@
       <PlansList :show-free="true" :for-landing="true"></PlansList>
     </section>
     <section
-      class="app-part-screen snap-start q-pa-xl q-mt-xl column"
-      style="min-height: 100vh"
+      class="app-part-screen snap-start q-pa-xl q-mt-xl q-pb-none column"
     >
       <div id="faq" class="w-h1 text-center q-pb-xl">Частые вопросы</div>
       <div class="q-mx-auto">
@@ -219,7 +219,6 @@
       </div>
     </section>
     <SinusText
-      class="q-mb-xl"
       textContent="...Все в жизни идет волнами, но с WowGPT вы всегда на гребне продуктивности. Держите темп и достигайте новых высот вместе с нами. Начните уже сейчас!"
       fontSize="14"
     ></SinusText>
@@ -256,11 +255,13 @@
         <a href="mailto:hello@wowgpt.ru" class="q-mt-auto">hello@wowgpt.ru</a>
       </p>
       <p class="col column">
-        <img
-          src="/images/logo_white.svg"
-          class="q-mt-auto"
-          style="max-height: 60px"
-        />
+        <a href="https://ask.wowgpt.ru">
+          <img
+            src="/images/logo_white.svg"
+            class="q-mt-auto"
+            style="max-height: 60px"
+          />
+        </a>
         <span class="text-grey"> &copy; 2024 WowGPT </span>
       </p>
     </footer>

@@ -211,9 +211,13 @@ function handleScroll() {
 }
 
 onMounted(async () => {
-  c.listChats();
   handleScroll();
   window.addEventListener('scroll', handleScroll);
+
+  const stagedMessage = localStorage.getItem('stagedMessage');
+  if (stagedMessage) {
+    newMessageText.value = stagedMessage;
+  }
 });
 
 onBeforeUnmount(() => {

@@ -9,7 +9,10 @@
     "
     @click="onClick"
   >
-    <template v-if="c.currentSubscription?.type == 'free'">
+    <template v-if="!c.isUserLoading && c.currentUser == null">
+      Войти
+    </template>
+    <template v-else-if="c.currentSubscription?.type == 'free'">
       Оформить подписку
     </template>
     <template
@@ -52,7 +55,9 @@ const c = useChatStore();
 const isShowPlans = ref(false);
 
 function onClick() {
-  if (Platform.is.mobile) {
+  if (!c.isUserLoading && c.currentUser == null) {
+    c.showSignInForm = true;
+  } else if (Platform.is.mobile) {
     // router.push('/subscribe');
     isShowPlans.value = true;
   } else {

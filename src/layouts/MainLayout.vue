@@ -34,8 +34,11 @@
           >PAY!</q-btn
         > -->
         <q-space></q-space>
-        <BuyButton class="q-mr-md"></BuyButton>
-        <UserBadge></UserBadge>
+        <BuyButton></BuyButton>
+        <UserBadge
+          class="q-ml-md"
+          v-if="c.currentUser || c.isUserLoading"
+        ></UserBadge>
       </q-toolbar>
     </q-header>
     <!-- Navigation Drawer -->
@@ -52,7 +55,7 @@
       >
         Здесь будут ваши чаты🗨️
       </div>
-      <q-item-list>
+      <q-items>
         <q-item
           v-for="chat in c.chats"
           :key="chat.id"
@@ -104,7 +107,7 @@
             </q-btn>
           </q-item-section>
         </q-item>
-      </q-item-list>
+      </q-items>
 
       <q-inner-loading :showing="c.isChatListLoading" class="text-primary">
         <q-spinner-hourglass size="sm" color="primary"></q-spinner-hourglass>
@@ -122,21 +125,23 @@
         :key="shareChatDialogLink"
       ></ShareChatCard>
     </q-dialog>
+    <q-dialog v-model="c.showSignInForm">
+      <SignInForm></SignInForm>
+    </q-dialog>
   </q-layout>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
 import { useChatStore } from 'src/stores/chatStore';
 import { useMeta, useQuasar } from 'quasar';
 import UserBadge from 'src/components/UserBadge.vue';
 import BuyButton from 'src/components/BuyButton.vue';
 import ShareChatCard from 'src/components/ShareChatCard.vue';
+import SignInForm from 'src/components/SignInForm.vue';
 import { Chat } from 'src/models/Chat';
 
 const c = useChatStore();
-const router = useRouter();
 const $q = useQuasar();
 
 const leftDrawerOpen = ref(true);
@@ -219,14 +224,11 @@ onMounted(async () => {
   const chatId = urlParams.get('c');
   if (chatId) c.fetchChatMessages(chatId);
 
-  if (isMobile()) leftDrawerOpen.value = false;
-
   await c.fetchUser();
   await c.fetchActualSubscription();
+  await c.listChats();
 
-  if (!c.currentUser) {
-    router.push('/login');
-  }
+  if (isMobile() || c.chats.length == 0) leftDrawerOpen.value = false;
 });
 
 watch(

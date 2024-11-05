@@ -84,17 +84,25 @@ const plans = [
     comment: 'Начальный уровень для знакомства с основными функциями',
     features: [
       {
-        title: 'До <b>7</b> сообщений ChatGPT в день',
+        title: 'До <b>10</b> сообщений ChatGPT в день',
         icon: 'eva-checkmark',
       },
       {
-        title: 'До <b>7</b> генераций картинок в день',
+        title: 'До <b>10</b> генераций картинок в день',
         icon: 'eva-checkmark',
       },
       {
-        title: 'Доступ к базовым функциям',
-        subtitle: 'Для комфортного старта',
-        icon: 'eva-checkmark',
+        title: 'Работа с фото',
+        subtitle: 'Для анализа изображений, распознавания текста',
+        icon: 'eva-plus',
+      },
+      {
+        title: 'Поиск в интернете',
+        icon: 'eva-plus',
+      },
+      {
+        title: 'Доступ к актуальным новостям',
+        icon: 'eva-plus',
       },
     ],
     action: {
