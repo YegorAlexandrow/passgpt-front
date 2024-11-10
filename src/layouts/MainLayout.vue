@@ -35,10 +35,7 @@
         > -->
         <q-space></q-space>
         <BuyButton></BuyButton>
-        <UserBadge
-          class="q-ml-md"
-          v-if="c.currentUser || c.isUserLoading"
-        ></UserBadge>
+        <UserBadge v-if="c.currentUser || c.isUserLoading"></UserBadge>
       </q-toolbar>
     </q-header>
     <!-- Navigation Drawer -->
@@ -125,7 +122,12 @@
         :key="shareChatDialogLink"
       ></ShareChatCard>
     </q-dialog>
-    <q-dialog v-model="c.showSignInForm">
+    <q-dialog
+      v-model="c.showSignInForm"
+      transition-show="slide-up"
+      transition-hide="slide-down"
+      transition-duration="500"
+    >
       <SignInForm></SignInForm>
     </q-dialog>
   </q-layout>
@@ -228,7 +230,7 @@ onMounted(async () => {
   await c.fetchActualSubscription();
   await c.listChats();
 
-  if (isMobile() || c.chats.length == 0) leftDrawerOpen.value = false;
+  if (isMobile()) leftDrawerOpen.value = false;
 });
 
 watch(

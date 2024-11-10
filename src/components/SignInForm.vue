@@ -5,37 +5,29 @@
     bordered
     style="max-width: 400px; border-radius: 30px"
   >
-    <div class="row" style="position: sticky; top: 0px">
-      <q-btn
-        dense
-        round
-        icon="close"
-        color="primary"
-        size="sm"
-        class="q-ml-auto"
-        @click="c.showSignInForm = false"
-      />
-    </div>
-    <q-card-section class="text-center">
-      <div class="text-h4 q-mb-lg">Вход и регистрация</div>
-      <div class="text-body1">Продолжить через:</div>
-    </q-card-section>
-    <q-card-section class="column">
-      <q-separator></q-separator>
-      <template v-for="(opt, i) in options" :key="i">
-        <q-btn flat class="q-my-sm" @click="c.login(opt.provider)">
+    <div class="text-h6 text-center q-my-sm">🚀 Быстро продолжить через:</div>
+    <div class="column q-px-md q-mt-lg">
+      <div class="row" v-for="(opt, i) in options" :key="i">
+        <q-space></q-space>
+        <q-btn
+          flat
+          rounded
+          no-caps
+          class="q-my-sm q-px-xl col-12 color-secondary"
+          @click="c.login(opt.provider)"
+        >
           <img class="logo" :src="opt.logoPath" />
-          <span class="col text-left q-px-xl">{{ opt.display }}</span>
+          <span class="col text-center text-h6 q-px-md">{{ opt.display }}</span>
         </q-btn>
-        <q-separator></q-separator>
-      </template>
-    </q-card-section>
-    <q-card-section class="text-caption">
+        <q-space></q-space>
+      </div>
+    </div>
+    <div class="text-caption text-grey text-center q-mt-lg">
       Продолжая, я принимаю условия
-      <a href="https://wowgpt.ru/offer">Договора об оказании услуг</a> и даю
-      согласие на обработку моих персональных данных в соответствии с
-      <a href="https://wowgpt.ru/privacy">Политикой конфиденциальности</a>
-    </q-card-section>
+      <a href="https://wowgpt.ru/offer">оферты</a> и даю
+      <a href="https://wowgpt.ru/privacy">согласие</a> на обработку персональных
+      данных
+    </div>
   </q-card>
 </template>
 <script setup lang="ts">
@@ -60,11 +52,11 @@ const options = ref([
     display: 'Google',
     logoPath: '/images/logo_google.svg',
   },
-  {
-    provider: 'ok',
-    display: 'Mail.ru',
-    logoPath: '/images/logo_mailru.svg',
-  },
+  // {
+  //   provider: 'ok',
+  //   display: 'Mail.ru',
+  //   logoPath: '/images/logo_mailru.svg',
+  // },
   // {
   //   provider: 'vk',
   //   display: 'Одноклассники',
@@ -74,7 +66,7 @@ const options = ref([
 </script>
 <style lang="scss" scoped>
 .logo {
-  height: 50px;
+  height: 42px;
   aspect-ratio: 1/1;
   object-fit: cover;
 }

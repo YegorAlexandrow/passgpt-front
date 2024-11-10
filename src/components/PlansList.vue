@@ -79,7 +79,7 @@ const props = defineProps({
 const plans = [
   {
     _id: 'free',
-    display_name: '🌱БЕСПЛАТНО',
+    display_name: '🌱ПРОБНЫЙ',
     price: null,
     comment: 'Начальный уровень для знакомства с основными функциями',
     features: [
@@ -94,15 +94,15 @@ const plans = [
       {
         title: 'Работа с фото',
         subtitle: 'Для анализа изображений, распознавания текста',
-        icon: 'eva-plus',
+        icon: 'eva-checkmark',
       },
       {
         title: 'Поиск в интернете',
-        icon: 'eva-plus',
+        icon: 'eva-checkmark',
       },
       {
         title: 'Доступ к актуальным новостям',
-        icon: 'eva-plus',
+        icon: 'eva-checkmark',
       },
     ],
     action: {
@@ -173,7 +173,7 @@ const plans = [
     ],
     action: {
       title: 'Выбрать',
-      callback: () => c.purchase('dailyy_boost'),
+      callback: () => c.purchase('daily_boost'),
     },
   },
   {

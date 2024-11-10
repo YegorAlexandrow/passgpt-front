@@ -1,5 +1,5 @@
 <template>
-  <q-avatar round style="cursor: pointer">
+  <q-avatar class="q-ml-md" round style="cursor: pointer">
     <q-inner-loading :showing="c.isUserLoading">
       <q-spinner-hourglass color="primary" size="md" />
     </q-inner-loading>

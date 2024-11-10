@@ -7,6 +7,12 @@ import { useQuasar } from 'quasar';
 
 const API_BASE = process.env.API_BASE;
 
+declare global {
+  interface Window {
+    ym(a0: number, a1: string, a2: string): void;
+  }
+}
+
 export const useChatStore = defineStore('chatStore', () => {
   const chats = ref<Chat[]>([]);
   const messages = ref<Message[]>([]);
@@ -167,7 +173,11 @@ export const useChatStore = defineStore('chatStore', () => {
         method: 'GET',
         credentials: 'include',
       });
-      chats.value = await response.json();
+      if (response.ok) {
+        chats.value = await response.json();
+      } else {
+        chats.value = [];
+      }
     } catch (e) {
       console.log(e);
       chats.value = [];
@@ -411,6 +421,7 @@ export const useChatStore = defineStore('chatStore', () => {
           if (done) {
             // console.log('Stream finished');
             isMessageLoading.value = false;
+            window.ym && window.ym(98810411, 'reachGoal', 'RECEIVE_MESSAGE');
             return;
           }
 
