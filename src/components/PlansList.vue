@@ -14,9 +14,25 @@
           </div>
           <q-space></q-space>
           <div class="col-auto text-h5 text-primary" v-if="plan.price">
-            {{ `${plan.price} ₽` }}
+            <!-- Если есть скидка, выводим старую цену с зачёркиванием -->
+            <span
+              v-if="plan.discount"
+              class="text-negative"
+              style="text-decoration: line-through"
+            >
+              {{ `${plan.price} ₽` }}
+            </span>
+            <!-- Отображение скидочной цены, если она указана -->
+            <span v-if="plan.discount" class="q-ml-sm text-bold">{{
+              `${plan.discount} ₽`
+            }}</span>
+            <!-- Отображение обычной цены, если скидка не указана -->
+            <span class="q-ml-sm text-bold" v-else>{{
+              `${plan.price} ₽`
+            }}</span>
           </div>
         </q-card-section>
+
         <q-card-section class="text-body1" style="height: 5em">
           {{ plan.comment }}
         </q-card-section>
@@ -40,6 +56,7 @@
             </div>
           </div>
         </q-card-section>
+
         <q-card-actions class="row q-mt-lg" v-if="plan.action">
           <q-btn
             class="col q-py-md text-h6"
@@ -55,6 +72,7 @@
     </div>
   </q-card>
 </template>
+
 <script setup lang="ts">
 import { useChatStore } from 'src/stores/chatStore';
 import { computed } from 'vue';
@@ -84,11 +102,11 @@ const plans = [
     comment: 'Начальный уровень для знакомства с основными функциями',
     features: [
       {
-        title: 'До <b>10</b> сообщений ChatGPT в день',
+        title: 'До <b>6</b> сообщений ChatGPT в день',
         icon: 'eva-checkmark',
       },
       {
-        title: 'До <b>10</b> генераций картинок в день',
+        title: 'До <b>6</b> генераций картинок в день',
         icon: 'eva-checkmark',
       },
       {
@@ -111,41 +129,8 @@ const plans = [
     },
   },
   {
-    _id: 'base',
-    display_name: '🚀БАЗОВЫЙ',
-    price: '149',
-    comment: 'Расширенные возможности для активного взаимодействия',
-    features: [
-      {
-        title: '<b>42</b> сообщения ChatGPT в день',
-        icon: 'eva-arrowhead-up',
-      },
-      {
-        title: 'До <b>42</b> генераций картинок в день',
-        icon: 'eva-arrowhead-up',
-      },
-      {
-        title: 'Работа с фото',
-        subtitle: 'Для анализа изображений, распознавания текста',
-        icon: 'eva-plus',
-      },
-      {
-        title: 'Поиск в интернете',
-        icon: 'eva-plus',
-      },
-      {
-        title: 'Доступ к актуальным новостям',
-        icon: 'eva-plus',
-      },
-    ],
-    action: {
-      title: 'Выбрать',
-      callback: () => c.purchase('base'),
-    },
-  },
-  {
     _id: 'daily_boost',
-    display_name: '⚡️DAILY BOOST',
+    display_name: '🚀DAILY BOOST',
     price: '69',
     comment: 'Интенсивный заряд возможностей на один день',
     features: [
@@ -174,6 +159,40 @@ const plans = [
     action: {
       title: 'Выбрать',
       callback: () => c.purchase('daily_boost'),
+    },
+  },
+  {
+    _id: 'base',
+    display_name: '💎БАЗОВЫЙ',
+    price: '149',
+    discount: '99', // Указываем скидочную цену
+    comment: 'Расширенные возможности для активного взаимодействия',
+    features: [
+      {
+        title: '<b>42</b> сообщения ChatGPT в день',
+        icon: 'eva-arrowhead-up',
+      },
+      {
+        title: 'До <b>42</b> генераций картинок в день',
+        icon: 'eva-arrowhead-up',
+      },
+      {
+        title: 'Работа с фото',
+        subtitle: 'Для анализа изображений, распознавания текста',
+        icon: 'eva-plus',
+      },
+      {
+        title: 'Поиск в интернете',
+        icon: 'eva-plus',
+      },
+      {
+        title: 'Доступ к актуальным новостям',
+        icon: 'eva-plus',
+      },
+    ],
+    action: {
+      title: 'Выбрать',
+      callback: () => c.purchase('base'),
     },
   },
   {
@@ -220,21 +239,23 @@ const plans = [
   },
 ];
 
+// Фильтрация планов в зависимости от showFree
 const filteredPlans = computed(() => {
   return plans.filter((x) => x._id != 'free' || props.showFree);
 });
 </script>
+
 <style>
 .scrollable-container {
-  width: 100%; /* Задает ширину контейнера */
-  overflow-x: auto; /* Включает горизонтальную прокрутку */
+  width: 100%;
+  overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-padding: 3px;
 }
 
 .horizontal-scroll {
-  display: flex; /* Использование флекс-контейнера */
-  flex-wrap: nowrap; /* Запрещает перенос элементов */
+  display: flex;
+  flex-wrap: nowrap;
 }
 
 .scroll-item {
@@ -245,7 +266,7 @@ const filteredPlans = computed(() => {
 
 @media screen and (max-width: 480px) {
   .scroll-item {
-    flex: 0 0 auto; /* Отключаем сжатие и перенос */
+    flex: 0 0 auto;
     width: calc(100vw - 8px) !important;
   }
 }

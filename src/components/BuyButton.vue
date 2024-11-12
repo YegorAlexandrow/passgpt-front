@@ -1,6 +1,11 @@
 <template>
   <q-btn
-    class="button-gradient q-px-lg"
+    :class="{
+      'q-px-lg': true,
+      'button-gradient': c.currentSubscription?.type != 'free',
+      'bg-secondary': c.currentSubscription?.type == 'free',
+      'text-primary': c.currentSubscription?.type == 'free',
+    }"
     flat
     rounded
     v-show="
@@ -13,7 +18,7 @@
       Войти
     </template>
     <template v-else-if="c.currentSubscription?.type == 'free'">
-      Оформить подписку
+      🔓 Открыть доступ
     </template>
     <template
       v-else-if="

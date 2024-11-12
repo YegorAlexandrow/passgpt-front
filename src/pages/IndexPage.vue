@@ -91,7 +91,7 @@
         input-style="padding-left: 20px; padding-right: 20px; margin-right: 20px; font-size: 1.1rem; font-weight: 400; max-height: 7em;"
         @keyup.enter="
           (e: KeyboardEvent) => {
-            if (e.ctrlKey && !c.isMessageLoading) sendMessage();
+            if (!e.shiftKey && !c.isMessageLoading) sendMessage();
           }
         "
       >
@@ -137,9 +137,8 @@
             @click="sendMessage"
             :loading="c.isMessageLoading"
             :disable="newMessageText.length < 1"
-            style="transform: translateX(4px); z-index: 8000"
+            style="transform: translate(6px, -1px); z-index: 8000"
           >
-            <q-tooltip> CTRL + ENTER </q-tooltip>
           </q-btn>
         </template>
       </q-input>

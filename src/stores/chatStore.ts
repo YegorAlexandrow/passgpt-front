@@ -330,10 +330,15 @@ export const useChatStore = defineStore('chatStore', () => {
       const delta =
         currentSubscription.value?.message_per_day_limit -
         currentSubscription.value.messages_in_last_day;
-      if (delta <= 3) {
+      if (delta < 1) {
+        createErrorNotification(
+          `У Вас не осталось соощений на сегодня.<br/>
+          Вы можете <a href="/test">🔓 Открыть доступ</a> или прийти завтра!`,
+        );
+      } else if (delta <= 3) {
         createErrorNotification(
           `У Вас осталось ${delta} ${getDeclensionOfMessages(delta)} на сегодня.<br/>
-          Вы можете <a href="/test">повысить уровень подписки</a>`,
+          Вы можете <a href="/test">🔓 Открыть доступ!</a>`,
         );
       }
     }
