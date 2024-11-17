@@ -1,6 +1,8 @@
 <template>
   <div class="column justify-center text-center">
-    <div class="text-h2 text-primary q-mb-lg">Привет!</div>
+    <div class="text-h2 text-primary q-mb-lg" style="font-weight: 400">
+      Привет!
+    </div>
     <div class="text-h4">Чем Вам помочь?</div>
     <div class="row q-mt-xl">
       <q-card

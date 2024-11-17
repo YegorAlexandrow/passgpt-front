@@ -23,19 +23,38 @@
           class="text-primary bg-secondary"
           @click="newChat"
         ></q-btn>
-        <!-- <q-btn
-          color="primary"
-          icon="eva-edit-2-outline"
-          size="md"
+        <q-btn
+          v-if="messagesLeft != null && messagesLeft <= 3"
+          class="q-mx-sm bg-secondary"
+          @click="isShowPlans = true"
+          rounded
           flat
-          round
-          class="text-primary bg-secondary"
-          @click="purchase"
-          >PAY!</q-btn
-        > -->
+          no-caps
+        >
+          Осталось {{ messagesLeft }}
+          {{ getDeclensionOfMessages(messagesLeft) }}
+        </q-btn>
         <q-space></q-space>
         <BuyButton></BuyButton>
         <UserBadge v-if="c.currentUser || c.isUserLoading"></UserBadge>
+
+        <q-dialog v-model="isShowPlans" full-width>
+          <div>
+            <div class="row">
+              <q-space></q-space>
+              <q-btn
+                dense
+                round
+                icon="close"
+                color="primary"
+                size="sm"
+                class="q-mx-sm"
+                @click="isShowPlans = false"
+              />
+            </div>
+            <PlansList class="q-pa-none" :show-free="false"></PlansList>
+          </div>
+        </q-dialog>
       </q-toolbar>
     </q-header>
     <!-- Navigation Drawer -->
@@ -127,6 +146,7 @@
       transition-show="slide-up"
       transition-hide="slide-down"
       transition-duration="500"
+      persistent
     >
       <SignInForm></SignInForm>
     </q-dialog>
@@ -141,12 +161,16 @@ import UserBadge from 'src/components/UserBadge.vue';
 import BuyButton from 'src/components/BuyButton.vue';
 import ShareChatCard from 'src/components/ShareChatCard.vue';
 import SignInForm from 'src/components/SignInForm.vue';
+import PlansList from 'src/components/PlansList.vue';
 import { Chat } from 'src/models/Chat';
+import { computed } from 'vue';
 
 const c = useChatStore();
 const $q = useQuasar();
 
-const leftDrawerOpen = ref(true);
+const leftDrawerOpen = ref(false);
+
+const isShowPlans = ref(false);
 
 function newChat() {
   c.messages = [];
@@ -157,6 +181,37 @@ function newChat() {
 //   const resp = await c.purchase();
 //   console.log(resp);
 // }
+
+const getDeclensionOfMessages = (count: number) => {
+  const lastDigit = count % 10;
+  const lastTwoDigits = count % 100;
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+    return 'сообщений';
+  }
+
+  switch (lastDigit) {
+    case 1:
+      return 'сообщение';
+    case 2:
+    case 3:
+    case 4:
+      return 'сообщения';
+    default:
+      return 'сообщений';
+  }
+};
+
+const messagesLeft = computed(() => {
+  if (c.currentSubscription != null) {
+    const delta =
+      c.currentSubscription?.message_per_day_limit -
+      c.currentSubscription.messages_in_last_day;
+    return delta;
+  }
+
+  return null;
+});
 
 function confirmDelete(chatId: string) {
   $q.dialog({
@@ -212,11 +267,11 @@ watch(
   },
 );
 
-const isMobile = () => {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent,
-  );
-};
+// const isMobile = () => {
+//   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+//     navigator.userAgent,
+//   );
+// };
 
 onMounted(async () => {
   const theme = localStorage.getItem('theme') || 'system';
@@ -230,7 +285,8 @@ onMounted(async () => {
   await c.fetchActualSubscription();
   await c.listChats();
 
-  if (isMobile()) leftDrawerOpen.value = false;
+  // if (isMobile())
+  leftDrawerOpen.value = false;
 });
 
 watch(

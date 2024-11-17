@@ -4,28 +4,28 @@
     size="lg"
     v-if="props.inProgress && props.content.length < 1"
   ></q-spinner-dots>
-  <div class="row q-mb-md" v-else>
+  <div class="row" v-else>
     <q-btn
       flat
       :icon="copied ? 'eva-checkmark-outline' : 'eva-copy-outline'"
-      size="sm"
-      class="q-px-sm"
+      size="md"
+      class="q-py-none q-px-sm q-mr-lg"
       @click="onCopy"
     ></q-btn>
-    <q-btn
-      flat
-      :icon="rate == 'like' ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'"
-      size="sm"
-      class="q-px-sm"
-      @click="rate = rate == 'like' ? 'none' : 'like'"
-    ></q-btn>
-    <q-btn
-      flat
-      :icon="rate == 'dislike' ? 'mdi-thumb-down' : 'mdi-thumb-down-outline'"
-      size="sm"
-      class="q-px-sm"
-      @click="rate = rate == 'dislike' ? 'none' : 'dislike'"
-    ></q-btn>
+    <q-rating
+      v-model="rating"
+      v-if="props.isLast"
+      icon="eva-star-outline"
+      size="1.5rem"
+      icon-selected="eva-star"
+      color="primary"
+      :readonly="!!rating"
+      :style="{
+        transform: props.inProgress ? 'scale(0)' : 'scale(1)',
+        transformOrigin: 'left',
+        transition: 'ease-in-out 0.3s',
+      }"
+    ></q-rating>
   </div>
 
   <!-- Диалог для изображения -->
@@ -66,16 +66,20 @@ import 'highlight.js/styles/stackoverflow-dark.css';
 import DOMPurify from 'dompurify';
 import ClipboardJS from 'clipboard';
 import mathjax3 from 'markdown-it-mathjax3';
+import { useChatStore } from 'src/stores/chatStore';
+
+const c = useChatStore();
 
 const props = defineProps({
   content: String,
   inProgress: Boolean,
+  isLast: Boolean,
 });
 
 const markdownContainer = ref(null);
 const renderedMarkdown = ref('');
 const copied = ref(false);
-const rate = ref('none');
+const rating = ref(null);
 
 // Переменные для диалога с изображением
 const isImageDialogOpen = ref(false);
@@ -100,6 +104,10 @@ const downloadImage = async (imageSrc) => {
   link.click();
   document.body.removeChild(link);
 };
+
+watch(rating, () => {
+  c.rate(rating.value);
+});
 
 async function onCopy() {
   await navigator.clipboard.writeText(props.content);
@@ -188,8 +196,9 @@ const addCopyButtons = () => {
 };
 
 const render = () => {
+  const filteredContent = props.content.replace(/【.*?】/g, '');
   const rawHtml = md.render(
-    props.content
+    filteredContent
       .replaceAll('\\( ', '$')
       .replaceAll(' \\)', '$')
       .replaceAll(' \\)', '$')

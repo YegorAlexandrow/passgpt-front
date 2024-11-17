@@ -210,9 +210,7 @@
             expand-icon="eva-plus"
             expanded-icon="eva-minus"
           >
-            <div class="q-pa-md">
-              {{ q.answer }}
-            </div>
+            <div class="q-pa-md" v-html="q.answer"></div>
           </q-expansion-item>
           <q-separator></q-separator>
         </template>

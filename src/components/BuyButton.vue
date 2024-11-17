@@ -2,9 +2,11 @@
   <q-btn
     :class="{
       'q-px-lg': true,
+      'q-py-sm': true,
+      'q-mt-xs': true,
       'button-gradient': c.currentSubscription?.type != 'free',
       'bg-secondary': c.currentSubscription?.type == 'free',
-      'text-primary': c.currentSubscription?.type == 'free',
+      'gradient-border': c.currentSubscription?.type == 'free',
     }"
     flat
     rounded
@@ -18,7 +20,7 @@
       Войти
     </template>
     <template v-else-if="c.currentSubscription?.type == 'free'">
-      🔓 Открыть доступ
+      Открыть больше 🚀
     </template>
     <template
       v-else-if="
@@ -28,7 +30,13 @@
       Взять DAILY BOOST
     </template>
 
-    <q-dialog v-model="isShowPlans" full-width>
+    <q-dialog
+      v-model="isShowPlans"
+      full-width
+      transition-show="slide-up"
+      transition-hide="slide-down"
+      transition-duration="500"
+    >
       <div>
         <div class="row">
           <q-space></q-space>
@@ -42,7 +50,7 @@
             @click="isShowPlans = false"
           />
         </div>
-        <PlansList class="q-pa-none" :show-free="false"></PlansList>
+        <PlansList class="q-pa-none" :show-free-button="false"></PlansList>
       </div>
     </q-dialog>
   </q-btn>
@@ -116,7 +124,40 @@ const messagesLeft = computed(() => {
     background-position: 100% 50%;
   }
 }
+.gradient-border {
+  --borderWidth: 1.5px;
+}
+.gradient-border:after {
+  content: '';
+  position: absolute;
+  top: calc(-1 * var(--borderWidth));
+  left: calc(-1 * var(--borderWidth));
+  height: calc(100% + var(--borderWidth) * 2);
+  width: calc(100% + var(--borderWidth) * 2);
+  background: linear-gradient(
+    60deg,
+    var(--q-primary),
+    var(--q-accent),
+    var(--q-primary),
+    var(--q-accent)
+  );
+  border-radius: 28px;
+  z-index: -1;
+  animation: animatedgradient 6s ease alternate infinite;
+  background-size: 300% 100%;
+}
 
+@keyframes animatedgradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
 /* Пример использования кнопки в HTML */
 /*
 <button class="button-gradient">Моя кнопка</button>

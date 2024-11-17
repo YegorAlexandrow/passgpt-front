@@ -52,6 +52,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/LandingLayout.vue'),
     children: [{ path: '', component: () => import('pages/LandingPage.vue') }],
   },
+  {
+    path: '/special',
+    component: () => import('layouts/EmptyLayout.vue'),
+    children: [{ path: '', component: () => import('pages/PromoPage.vue') }],
+  },
 
   // Always leave this as last one,
   // but you can also remove it

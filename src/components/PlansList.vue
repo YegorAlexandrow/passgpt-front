@@ -33,7 +33,10 @@
           </div>
         </q-card-section>
 
-        <q-card-section class="text-body1" style="height: 5em">
+        <q-card-section
+          style="height: 5em; font-size: 1.3rem"
+          class="text-center"
+        >
           {{ plan.comment }}
         </q-card-section>
 
@@ -59,6 +62,7 @@
 
         <q-card-actions class="row q-mt-lg" v-if="plan.action">
           <q-btn
+            v-if="plan._id != 'free' || props.showFreeButton"
             class="col q-py-md text-h6"
             color="primary"
             @click="props.forLanding ? goToApp() : plan.action.callback()"
@@ -67,6 +71,16 @@
           >
             {{ plan.action.title }}
           </q-btn>
+          <q-btn
+            v-else
+            outline
+            unelevated
+            rounded
+            class="col q-py-md text-h6"
+            disabled
+            no-caps
+            >Уже у Вас</q-btn
+          >
         </q-card-actions>
       </q-card>
     </div>
@@ -88,6 +102,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  showFreeButton: {
+    type: Boolean,
+    default: true,
+  },
   forLanding: {
     type: Boolean,
     default: false,
@@ -99,7 +117,7 @@ const plans = [
     _id: 'free',
     display_name: '🌱ПРОБНЫЙ',
     price: null,
-    comment: 'Начальный уровень для знакомства с основными функциями',
+    comment: 'Для тех, кто только начинают работать с ChatGPT',
     features: [
       {
         title: 'До <b>6</b> сообщений ChatGPT в день',
@@ -108,24 +126,51 @@ const plans = [
       {
         title: 'До <b>6</b> генераций картинок в день',
         icon: 'eva-checkmark',
-      },
-      {
-        title: 'Работа с фото',
-        subtitle: 'Для анализа изображений, распознавания текста',
-        icon: 'eva-checkmark',
-      },
-      {
-        title: 'Поиск в интернете',
-        icon: 'eva-checkmark',
-      },
-      {
-        title: 'Доступ к актуальным новостям',
-        icon: 'eva-checkmark',
+        subtitle: '',
       },
     ],
     action: {
       title: 'Попробовать',
       callback: () => c.purchase('free'),
+    },
+  },
+  {
+    _id: 'base',
+    display_name: '💎БАЗОВЫЙ',
+    price: '149',
+    discount: '99', // Указываем скидочную цену
+    comment: 'Вывести продуктивность на новый уровень!',
+    features: [
+      {
+        title: '<b>42</b> сообщения ChatGPT в день',
+        icon: 'eva-arrowhead-up',
+      },
+      {
+        title: 'До <b>42</b> генераций картинок в день',
+        icon: 'eva-arrowhead-up',
+      },
+      {
+        title: 'Поиск в интернете 🔍',
+        icon: 'eva-plus',
+      },
+      {
+        title: 'Доступ к новостям 📰',
+        icon: 'eva-plus',
+      },
+      {
+        title: 'Работа с фото 🖼️',
+        subtitle: 'Для анализа изображений, распознавания текста',
+        icon: 'eva-plus',
+      },
+      {
+        title: 'Анализ файлов 📂',
+        subtitle: 'Загружайте документы, презентации, таблицы, код',
+        icon: 'eva-plus',
+      },
+    ],
+    action: {
+      title: 'Начать сейчас',
+      callback: () => c.purchase('base'),
     },
   },
   {
@@ -143,100 +188,58 @@ const plans = [
         icon: 'eva-arrowhead-up',
       },
       {
-        title: 'Работа с фото',
-        subtitle: 'Для анализа изображений, распознавания текста',
-        icon: 'eva-checkmark',
-      },
-      {
-        title: 'Поиск в интернете',
-        icon: 'eva-checkmark',
-      },
-      {
-        title: 'Доступ к актуальным новостям',
-        icon: 'eva-checkmark',
+        title: '<b>ВСЕ</b> возможности тарифа 💎БАЗОВЫЙ',
+        icon: 'eva-plus',
+        subtitle: '',
       },
     ],
     action: {
-      title: 'Выбрать',
+      title: 'Начать сейчас',
       callback: () => c.purchase('daily_boost'),
     },
   },
-  {
-    _id: 'base',
-    display_name: '💎БАЗОВЫЙ',
-    price: '149',
-    discount: '99', // Указываем скидочную цену
-    comment: 'Расширенные возможности для активного взаимодействия',
-    features: [
-      {
-        title: '<b>42</b> сообщения ChatGPT в день',
-        icon: 'eva-arrowhead-up',
-      },
-      {
-        title: 'До <b>42</b> генераций картинок в день',
-        icon: 'eva-arrowhead-up',
-      },
-      {
-        title: 'Работа с фото',
-        subtitle: 'Для анализа изображений, распознавания текста',
-        icon: 'eva-plus',
-      },
-      {
-        title: 'Поиск в интернете',
-        icon: 'eva-plus',
-      },
-      {
-        title: 'Доступ к актуальным новостям',
-        icon: 'eva-plus',
-      },
-    ],
-    action: {
-      title: 'Выбрать',
-      callback: () => c.purchase('base'),
-    },
-  },
-  {
-    _id: 'pro',
-    display_name: '👑ПРО',
-    price: '399',
-    comment: 'Полный доступ к эксклюзивным функциям и мощным инструментам',
-    features: [
-      {
-        title: '<b>101</b> сообщение ChatGPT в день',
-        icon: 'eva-arrowhead-up',
-      },
-      {
-        title: 'До <b>101</b> генерации картинок',
-        icon: 'eva-arrowhead-up',
-      },
-      {
-        title: 'Работа с фото',
-        subtitle: 'Для анализа изображений, распознавания текста',
-        icon: 'eva-checkmark',
-      },
-      {
-        title: 'Поиск в интернете',
-        icon: 'eva-checkmark',
-      },
-      {
-        title: 'Доступ к актуальным новостям',
-        icon: 'eva-checkmark',
-      },
-      {
-        title: 'Эксклюзивный доступ к <strong>GPT-o1</strong>',
-        subtitle: 'Для самых сложных задач и решений',
-        icon: 'eva-plus',
-      },
-      {
-        title: 'Будет позже!🕓',
-        icon: '',
-      },
-    ],
-    action: {
-      title: 'Следить за обновлениями',
-      callback: () => c.subscribeEmail('pro_waitlist'),
-    },
-  },
+  // {
+  //   _id: 'pro',
+  //   display_name: '👑ПРО',
+  //   price: '399',
+  //   comment: 'Полный доступ к эксклюзивным функциям и мощным инструментам',
+  //   features: [
+  //     {
+  //       title: '<b>101</b> сообщение ChatGPT в день',
+  //       icon: 'eva-arrowhead-up',
+  //     },
+  //     {
+  //       title: 'До <b>101</b> генерации картинок',
+  //       icon: 'eva-arrowhead-up',
+  //     },
+  //     {
+  //       title: 'Работа с фото',
+  //       subtitle: 'Для анализа изображений, распознавания текста',
+  //       icon: 'eva-checkmark',
+  //     },
+  //     {
+  //       title: 'Поиск в интернете',
+  //       icon: 'eva-checkmark',
+  //     },
+  //     {
+  //       title: 'Доступ к актуальным новостям',
+  //       icon: 'eva-checkmark',
+  //     },
+  //     {
+  //       title: 'Эксклюзивный доступ к <strong>GPT-o1</strong>',
+  //       subtitle: 'Для самых сложных задач и решений',
+  //       icon: 'eva-plus',
+  //     },
+  //     {
+  //       title: 'Будет позже!🕓',
+  //       icon: '',
+  //     },
+  //   ],
+  //   action: {
+  //     title: 'Следить за обновлениями',
+  //     callback: () => c.subscribeEmail('pro_waitlist'),
+  //   },
+  // },
 ];
 
 // Фильтрация планов в зависимости от showFree
@@ -256,11 +259,13 @@ const filteredPlans = computed(() => {
 .horizontal-scroll {
   display: flex;
   flex-wrap: nowrap;
+  justify-content: center;
 }
 
 .scroll-item {
   border-radius: 33px;
   min-width: 340px !important;
+  max-width: 450px !important;
   scroll-snap-align: start;
 }
 

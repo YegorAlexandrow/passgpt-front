@@ -267,8 +267,8 @@ function formatDate(timestamp: number): string {
 function getSubDisplayName(sub: string) {
   return (
     {
-      free: 'Бесплатно🌱',
-      base: 'Базовый🚀',
+      free: 'Пробный🌱',
+      base: 'Базовый💎',
       pro: 'ПРО👑',
       daily_boost: 'DAILY BOOST⚡️',
     }[sub] || sub

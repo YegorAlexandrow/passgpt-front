@@ -1,10 +1,15 @@
 <template>
+  <div
+    class="cool-bg"
+    :style="{ opacity: c.messages?.length > 1 ? 0 : 1 }"
+  ></div>
   <q-page class="q-pb-md column q-mx-auto" style="max-width: 820px">
     <WelcomeScreen
       v-if="
         (!c.currentChatId || c.messages.length == 0) &&
         !c.isMessageLoading &&
-        !c.isChatLoading
+        !c.isChatLoading &&
+        !c.showSignInForm
       "
       style="height: calc(100vh - 200px)"
     ></WelcomeScreen>
@@ -13,9 +18,13 @@
       v-else-if="!c.isChatLoading"
       style="max-width: 100%; overflow: hidden"
     >
-      <template v-for="m in c.messages" :key="m.id">
+      <template v-for="(m, i) in c.messages" :key="m.id">
         <template v-if="m.role == 'assistant'">
-          <MarkDownRenderer :content="m.text" :in-progress="m.progress" />
+          <MarkDownRenderer
+            :content="m.text"
+            :in-progress="m.progress"
+            :is-last="i == c.messages.length - 1"
+          />
         </template>
         <template v-else-if="m.role == 'tool'">
           <ToolLabel :message="m"></ToolLabel>
@@ -78,7 +87,7 @@
         type="file"
         id="fileinput"
         style="display: none"
-        accept="image/*"
+        accept=".c,.cpp,.cs,.css,.doc,.docx,.go,.html,.java,.js,.json,.md,.pdf,.php,.pptx,.py,.rb,.sh,.tex,.ts,.txt,.png,.jpg,.fig,.webp,.xls,.xlsx,.csv"
       />
       <q-input
         class="col"
@@ -88,10 +97,34 @@
         autogrow
         type="text"
         placeholder="Ваше сообщение..."
+        :style="{
+          transform: isDropping ? 'scale(1.05) rotate(1deg)' : '',
+          transition: 'transform ease-in-out 0.2s',
+        }"
         input-style="padding-left: 20px; padding-right: 20px; margin-right: 20px; font-size: 1.1rem; font-weight: 400; max-height: 7em;"
         @keyup.enter="
           (e: KeyboardEvent) => {
             if (!e.shiftKey && !c.isMessageLoading) sendMessage();
+          }
+        "
+        @paste="onPaste"
+        @drop="onDrop"
+        @dragenter="
+          (e: DragEvent) => {
+            e.preventDefault();
+            isDropping = true;
+          }
+        "
+        @dragover="
+          (e: DragEvent) => {
+            e.preventDefault();
+            isDropping = true;
+          }
+        "
+        @dragleave="
+          (e: DragEvent) => {
+            e.preventDefault();
+            isDropping = false;
           }
         "
       >
@@ -122,7 +155,7 @@
               icon="close"
               color="negative"
               size="xs"
-              style="position: absolute; top: -4px; right: -4px"
+              style="position: absolute; top: -4px; right: -4px; z-index: 2000"
               @click="attachedFile = null"
             />
           </div>
@@ -144,7 +177,7 @@
       </q-input>
       <div
         class="text-caption text-center text-grey q-mt-xs"
-        style="word-wrap: none; text-overflow: ellipsis"
+        style="word-wrap: none; text-overflow: ellipsis; font-size: 0.65rem"
       >
         ИИ может ошибаться. Проверяйте важную информацию.
       </div>
@@ -160,12 +193,14 @@ import ToolLabel from 'src/components/ToolLabel.vue';
 import WelcomeScreen from 'src/components/WelcomeScreen.vue';
 import { computed } from 'vue';
 import { useMeta } from 'quasar';
+import { getMaterialFileIcon } from 'file-extension-icon-js';
 
 const c = useChatStore();
 
 const newMessageText = ref('');
 const scrollPosition = ref(0);
 const maxScrollPosition = ref(1);
+const isDropping = ref(false);
 
 async function sendMessage() {
   if (newMessageText.value.length < 1) return;
@@ -177,15 +212,49 @@ async function sendMessage() {
 }
 
 const attachedFile = ref<File | null>(null);
-const attachedFileUrl = computed(() =>
-  attachedFile.value ? URL.createObjectURL(attachedFile.value) : '',
-);
+const attachedFileUrl = computed(() => {
+  if (attachedFile.value) {
+    return attachedFile.value.type.startsWith('image')
+      ? URL.createObjectURL(attachedFile.value)
+      : getMaterialFileIcon(attachedFile.value.name);
+  }
+  return '';
+});
+
+function checkFileAttachment() {
+  if (c.currentUser == null) {
+    c.messages.push({
+      id: undefined,
+      text: '',
+      role: 'assistant',
+      progress: true,
+      tool_id: undefined,
+      tool_name: undefined,
+    });
+    localStorage.setItem('stagedMessage', newMessageText.value);
+    setTimeout(() => {
+      c.showSignInForm = true;
+      c.isMessageLoading = false;
+    }, 800);
+    return true;
+  }
+
+  if (c.currentSubscription?.type == 'free') {
+    c.createErrorNotification(
+      'Прикреплять файлы можно, начиная с базовой подписки!',
+    );
+    return true;
+  }
+  return false;
+}
 
 function attachFile() {
+  if (checkFileAttachment()) return;
+
   const fi: HTMLInputElement = <HTMLInputElement>(
     document.getElementById('fileinput')
   );
-
+  fi!.value = '';
   fi!.onchange = () => {
     if (fi!.files && fi!.files.length > 0) {
       // console.log('Выбран файл:', fi!.files);
@@ -207,6 +276,73 @@ function handleScroll() {
   scrollPosition.value = window.scrollY || 0;
   maxScrollPosition.value =
     (document.documentElement.scrollHeight || 0) - (window.innerHeight || 1);
+}
+
+const allowedExtensions = [
+  '.c',
+  '.cpp',
+  '.cs',
+  '.css',
+  '.doc',
+  '.docx',
+  '.go',
+  '.html',
+  '.java',
+  '.js',
+  '.json',
+  '.md',
+  '.pdf',
+  '.php',
+  '.pptx',
+  '.py',
+  '.rb',
+  '.sh',
+  '.tex',
+  '.ts',
+  '.txt',
+  '.png',
+  '.jpg',
+  '.fig',
+  '.webp',
+  '.xls',
+  '.xlsx',
+  '.csv',
+];
+
+function onDrop(event: DragEvent) {
+  event.preventDefault();
+
+  isDropping.value = false;
+
+  if (checkFileAttachment()) return;
+
+  if (event.dataTransfer) {
+    const files = Array.from(event.dataTransfer.files);
+    if (files.length > 0) {
+      const file = files[0];
+      const extension = file!.name.split('.').pop()?.toLowerCase();
+      if (allowedExtensions.includes(`.${extension}`)) {
+        attachedFile.value = file;
+      }
+    }
+  }
+}
+
+function onPaste(event: ClipboardEvent) {
+  if (event.clipboardData) {
+    const items = Array.from(event.clipboardData.items);
+    for (let item of items) {
+      if (item.kind === 'file') {
+        if (checkFileAttachment()) return;
+        const file = item.getAsFile();
+        const extension = file!.name.split('.').pop()?.toLowerCase();
+        if (allowedExtensions.includes(`.${extension}`)) {
+          attachedFile.value = file;
+        }
+        break;
+      }
+    }
+  }
 }
 
 onMounted(async () => {
@@ -245,5 +381,25 @@ watch(
 
 .no-bg {
   background: none !important;
+}
+
+.cool-bg {
+  background-image: url('/images/bg6.webp');
+  background-size: cover;
+  background-position: top;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+
+  transition: opacity ease-in-out 3.5s;
+}
+
+.body--light .cool-bg {
+  background-image: url('/images/bg8.webp');
+  background-position: center;
 }
 </style>

@@ -4,6 +4,7 @@ import { Chat } from 'src/models/Chat';
 import { Message } from 'src/models/Message';
 import { Subscription, User } from 'src/models/User';
 import { useQuasar } from 'quasar';
+import { getMaterialFileIcon } from 'file-extension-icon-js';
 
 const API_BASE = process.env.API_BASE;
 
@@ -66,26 +67,6 @@ export const useChatStore = defineStore('chatStore', () => {
     });
     location.href = '/login';
   }
-
-  const getDeclensionOfMessages = (count: number) => {
-    const lastDigit = count % 10;
-    const lastTwoDigits = count % 100;
-
-    if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
-      return 'сообщений';
-    }
-
-    switch (lastDigit) {
-      case 1:
-        return 'сообщение';
-      case 2:
-      case 3:
-      case 4:
-        return 'сообщения';
-      default:
-        return 'сообщений';
-    }
-  };
 
   async function fetchActualSubscription() {
     isSubLoading.value = true;
@@ -157,6 +138,7 @@ export const useChatStore = defineStore('chatStore', () => {
       });
       if (response.ok) {
         currentUser.value = await response.json();
+        window.ym && window.ym(98810411, 'setUserID', currentUser.value!.id);
       } else {
         currentUser.value = null;
       }
@@ -185,13 +167,16 @@ export const useChatStore = defineStore('chatStore', () => {
     isChatListLoading.value = false;
   }
 
-  async function purchase(type: string) {
+  async function purchase(
+    type: string,
+    promoCode: string | undefined = undefined,
+  ) {
     // try {
     const response = await fetch(`${API_BASE}/subscriptions/purchase`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type }),
+      body: JSON.stringify({ type, promo_code: promoCode }),
     });
 
     if (!response.ok) {
@@ -206,6 +191,7 @@ export const useChatStore = defineStore('chatStore', () => {
       }
     } else {
       const resp = await response.json();
+      console.log(resp);
       window.location.href = resp.payment_url;
     }
     // } catch (e) {
@@ -229,6 +215,20 @@ export const useChatStore = defineStore('chatStore', () => {
       }
     } catch (e) {
       createErrorNotification('Произошла ошибка во время подписки.');
+    }
+  }
+
+  async function rate(rating: number) {
+    const response = await fetch(`${API_BASE}/user_actions/rating`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rating, chat_id: currentChatId.value }),
+    });
+
+    if (response.ok) {
+      const resp = await response.json();
+      createErrorNotification(resp.message, 'primary');
     }
   }
 
@@ -335,11 +335,6 @@ export const useChatStore = defineStore('chatStore', () => {
           `У Вас не осталось соощений на сегодня.<br/>
           Вы можете <a href="/test">🔓 Открыть доступ</a> или прийти завтра!`,
         );
-      } else if (delta <= 3) {
-        createErrorNotification(
-          `У Вас осталось ${delta} ${getDeclensionOfMessages(delta)} на сегодня.<br/>
-          Вы можете <a href="/test">🔓 Открыть доступ!</a>`,
-        );
       }
     }
   }
@@ -364,7 +359,11 @@ export const useChatStore = defineStore('chatStore', () => {
       progress: false,
       tool_id: undefined,
       tool_name: undefined,
-      attachments: file ? [URL.createObjectURL(file)] : undefined,
+      attachments: file
+        ? file.type.startsWith('image')
+          ? [URL.createObjectURL(file)]
+          : [getMaterialFileIcon(file.name)]
+        : undefined,
     });
 
     isMessageLoading.value = true;
@@ -576,5 +575,7 @@ export const useChatStore = defineStore('chatStore', () => {
     subscribeEmail,
     fetchSharedChatMessages,
     checkHealth,
+    rate,
+    createErrorNotification,
   };
 });
