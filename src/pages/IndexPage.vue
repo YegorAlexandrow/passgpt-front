@@ -222,6 +222,7 @@ const attachedFileUrl = computed(() => {
 });
 
 function checkFileAttachment() {
+  window.ym && window.ym(98810411, 'reachGoal', 'ATTACH_FILE');
   if (c.currentUser == null) {
     c.messages.push({
       id: undefined,
@@ -232,17 +233,14 @@ function checkFileAttachment() {
       tool_name: undefined,
     });
     localStorage.setItem('stagedMessage', newMessageText.value);
-    setTimeout(() => {
-      c.showSignInForm = true;
-      c.isMessageLoading = false;
-    }, 800);
+    c.showSignInForm = true;
+    c.isMessageLoading = false;
     return true;
   }
 
   if (c.currentSubscription?.type == 'free') {
-    c.createErrorNotification(
-      'Прикреплять файлы можно, начиная с базовой подписки!',
-    );
+    c.miniPlansTitle = 'Прикреплять файлы можно в тарифах:';
+    c.isShowMiniPlans = true;
     return true;
   }
   return false;

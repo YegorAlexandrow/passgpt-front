@@ -24,6 +24,10 @@ export const useChatStore = defineStore('chatStore', () => {
   const isChatListLoading = ref<boolean>(false);
   const isChatLoading = ref<boolean>(false);
   const isSubLoading = ref<boolean>(false);
+  const isShowPlans = ref<boolean>(false);
+
+  const isShowMiniPlans = ref<boolean>(false);
+  const miniPlansTitle = ref('Прикреплять файлы можно в подписке!');
 
   const currentUser = ref<User | null>(null);
   const currentSubscription = ref<Subscription | null>(null);
@@ -331,10 +335,10 @@ export const useChatStore = defineStore('chatStore', () => {
         currentSubscription.value?.message_per_day_limit -
         currentSubscription.value.messages_in_last_day;
       if (delta < 1) {
-        createErrorNotification(
-          `У Вас не осталось соощений на сегодня.<br/>
-          Вы можете <a href="/test">🔓 Открыть доступ</a> или прийти завтра!`,
-        );
+        miniPlansTitle.value = 'Не осталось сообщений на сегодня';
+        isShowMiniPlans.value = true;
+
+        window.ym && window.ym(98810411, 'reachGoal', 'REACH_LIMIT');
       }
     }
   }
@@ -405,7 +409,14 @@ export const useChatStore = defineStore('chatStore', () => {
     );
 
     if (!response.ok) {
-      createErrorNotification((await response.json()).detail);
+      if (response.status == 429) {
+        miniPlansTitle.value = 'Не осталось сообщений на сегодня!';
+        isShowMiniPlans.value = true;
+
+        window.ym && window.ym(98810411, 'reachGoal', 'REACH_LIMIT');
+      } else {
+        createErrorNotification((await response.json()).detail);
+      }
       isMessageLoading.value = false;
       return;
     }
@@ -555,6 +566,9 @@ export const useChatStore = defineStore('chatStore', () => {
     isChatLoading,
     isChatListLoading,
     isSubLoading,
+    isShowPlans,
+    isShowMiniPlans,
+    miniPlansTitle,
     currentChat,
     currentUser,
     currentSubscription,

@@ -24,9 +24,9 @@
           @click="newChat"
         ></q-btn>
         <q-btn
-          v-if="messagesLeft != null && messagesLeft <= 3"
+          v-if="messagesLeft != null && messagesLeft <= 3 && !isMobile()"
           class="q-mx-sm bg-secondary"
-          @click="isShowPlans = true"
+          @click="c.isShowPlans = true"
           rounded
           flat
           no-caps
@@ -38,7 +38,13 @@
         <BuyButton></BuyButton>
         <UserBadge v-if="c.currentUser || c.isUserLoading"></UserBadge>
 
-        <q-dialog v-model="isShowPlans" full-width>
+        <q-dialog
+          v-model="c.isShowPlans"
+          full-width
+          transition-show="slide-up"
+          transition-hide="slide-down"
+          transition-duration="500"
+        >
           <div>
             <div class="row">
               <q-space></q-space>
@@ -49,7 +55,7 @@
                 color="primary"
                 size="sm"
                 class="q-mx-sm"
-                @click="isShowPlans = false"
+                @click="c.isShowPlans = false"
               />
             </div>
             <PlansList class="q-pa-none" :show-free="false"></PlansList>
@@ -150,6 +156,14 @@
     >
       <SignInForm></SignInForm>
     </q-dialog>
+    <q-dialog
+      v-model="c.isShowMiniPlans"
+      transition-show="slide-up"
+      transition-hide="slide-down"
+      transition-duration="500"
+    >
+      <MiniPlans :title="c.miniPlansTitle"></MiniPlans>
+    </q-dialog>
   </q-layout>
 </template>
 
@@ -162,6 +176,7 @@ import BuyButton from 'src/components/BuyButton.vue';
 import ShareChatCard from 'src/components/ShareChatCard.vue';
 import SignInForm from 'src/components/SignInForm.vue';
 import PlansList from 'src/components/PlansList.vue';
+import MiniPlans from 'src/components/MiniPlans.vue';
 import { Chat } from 'src/models/Chat';
 import { computed } from 'vue';
 
@@ -169,8 +184,6 @@ const c = useChatStore();
 const $q = useQuasar();
 
 const leftDrawerOpen = ref(false);
-
-const isShowPlans = ref(false);
 
 function newChat() {
   c.messages = [];
@@ -207,7 +220,11 @@ const messagesLeft = computed(() => {
     const delta =
       c.currentSubscription?.message_per_day_limit -
       c.currentSubscription.messages_in_last_day;
-    return delta;
+
+    return Date.now() - (c.currentSubscription?.last_message_at || 0) >
+      24 * 3600 * 1000
+      ? null
+      : delta;
   }
 
   return null;
@@ -267,11 +284,11 @@ watch(
   },
 );
 
-// const isMobile = () => {
-//   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-//     navigator.userAgent,
-//   );
-// };
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent,
+  );
+};
 
 onMounted(async () => {
   const theme = localStorage.getItem('theme') || 'system';

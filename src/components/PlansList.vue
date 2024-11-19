@@ -176,7 +176,7 @@ const plans = [
   {
     _id: 'daily_boost',
     display_name: '🚀DAILY BOOST',
-    price: '69',
+    price: '59',
     comment: 'Интенсивный заряд возможностей на один день',
     features: [
       {
