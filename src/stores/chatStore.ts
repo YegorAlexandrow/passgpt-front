@@ -25,6 +25,7 @@ export const useChatStore = defineStore('chatStore', () => {
   const isChatLoading = ref<boolean>(false);
   const isSubLoading = ref<boolean>(false);
   const isShowPlans = ref<boolean>(false);
+  const showSignInForm = ref(false);
 
   const isShowMiniPlans = ref<boolean>(false);
   const miniPlansTitle = ref('Прикреплять файлы можно в подписке!');
@@ -33,7 +34,7 @@ export const useChatStore = defineStore('chatStore', () => {
   const currentSubscription = ref<Subscription | null>(null);
   const subscriptionHistory = ref<Subscription[]>([]);
 
-  const showSignInForm = ref(false);
+  const atLeastOneMessageSentNow = ref<boolean>(false);
 
   const $q = useQuasar();
 
@@ -222,12 +223,12 @@ export const useChatStore = defineStore('chatStore', () => {
     }
   }
 
-  async function rate(rating: number) {
+  async function rate(rating: number, payload: string = '') {
     const response = await fetch(`${API_BASE}/user_actions/rating`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rating, chat_id: currentChatId.value }),
+      body: JSON.stringify({ rating, payload, chat_id: currentChatId.value }),
     });
 
     if (response.ok) {
@@ -335,8 +336,8 @@ export const useChatStore = defineStore('chatStore', () => {
         currentSubscription.value?.message_per_day_limit -
         currentSubscription.value.messages_in_last_day;
       if (delta < 1) {
-        miniPlansTitle.value = 'Не осталось сообщений на сегодня';
-        isShowMiniPlans.value = true;
+        // miniPlansTitle.value = 'Не осталось сообщений на сегодня';
+        // isShowMiniPlans.value = true;
 
         window.ym && window.ym(98810411, 'reachGoal', 'REACH_LIMIT');
       }
@@ -408,14 +409,17 @@ export const useChatStore = defineStore('chatStore', () => {
       },
     );
 
+    atLeastOneMessageSentNow.value = true;
+
     if (!response.ok) {
-      if (response.status == 429) {
+      const d = await response.json();
+      if (response.status == 429 && d.detail.includes('msg_quota')) {
         miniPlansTitle.value = 'Не осталось сообщений на сегодня!';
         isShowMiniPlans.value = true;
 
         window.ym && window.ym(98810411, 'reachGoal', 'REACH_LIMIT');
       } else {
-        createErrorNotification((await response.json()).detail);
+        createErrorNotification(d.detail);
       }
       isMessageLoading.value = false;
       return;
@@ -568,6 +572,7 @@ export const useChatStore = defineStore('chatStore', () => {
     isSubLoading,
     isShowPlans,
     isShowMiniPlans,
+    atLeastOneMessageSentNow,
     miniPlansTitle,
     currentChat,
     currentUser,

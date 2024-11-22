@@ -238,11 +238,11 @@ function checkFileAttachment() {
     return true;
   }
 
-  if (c.currentSubscription?.type == 'free') {
-    c.miniPlansTitle = 'Прикреплять файлы можно в тарифах:';
-    c.isShowMiniPlans = true;
-    return true;
-  }
+  // if (c.currentSubscription?.type == 'free') {
+  //   c.miniPlansTitle = 'Прикреплять файлы можно в тарифах:';
+  //   c.isShowMiniPlans = true;
+  //   return true;
+  // }
   return false;
 }
 

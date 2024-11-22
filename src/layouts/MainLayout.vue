@@ -24,7 +24,12 @@
           @click="newChat"
         ></q-btn>
         <q-btn
-          v-if="messagesLeft != null && messagesLeft <= 3 && !isMobile()"
+          v-if="
+            messagesLeft != null &&
+            messagesLeft <= 3 &&
+            !isMobile() &&
+            c.atLeastOneMessageSentNow
+          "
           class="q-mx-sm bg-secondary"
           @click="c.isShowPlans = true"
           rounded
@@ -304,6 +309,8 @@ onMounted(async () => {
 
   // if (isMobile())
   leftDrawerOpen.value = false;
+
+  window.addEventListener('hashchange', () => console.log('KEKUSHKA'));
 });
 
 watch(

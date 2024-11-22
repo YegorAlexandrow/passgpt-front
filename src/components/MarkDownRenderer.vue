@@ -79,7 +79,7 @@ const props = defineProps({
 const markdownContainer = ref(null);
 const renderedMarkdown = ref('');
 const copied = ref(false);
-const rating = ref(null);
+const rating = ref(0);
 
 // Переменные для диалога с изображением
 const isImageDialogOpen = ref(false);
@@ -106,7 +106,7 @@ const downloadImage = async (imageSrc) => {
 };
 
 watch(rating, () => {
-  c.rate(rating.value);
+  c.rate(rating.value, props.content.substring(0, 120));
 });
 
 async function onCopy() {
@@ -236,7 +236,10 @@ watch(
         }
 
         markdownContainer.value.querySelectorAll('a').forEach((a) => {
-          a.target = '_blank';
+          console.log(a, a.href);
+          if (a.href.includes('javascript:')) {
+            a.href = 'javascript:' + a.href.split('javascript:')[1];
+          } else a.target = '_blank';
         });
       }
     });
@@ -327,6 +330,27 @@ watch(
 .markdown-container p:has(math) {
   text-align: center;
   transform: scale(1.1);
+}
+
+.markdown-container a > button {
+  padding: 8px;
+  padding-left: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-right: 10px;
+  border: none;
+  border-radius: 50px;
+  background: var(--q-message-bubble);
+  color: var(--q-message-bubble-text);
+  cursor: pointer;
+}
+
+.markdown-container hr {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  opacity: 0.2;
+  border: 2px dotted;
+  border-style: none none dotted;
 }
 
 pre {

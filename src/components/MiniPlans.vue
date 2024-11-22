@@ -71,6 +71,17 @@ const props = defineProps({
 
 const plans = [
   {
+    _id: 'daily_boost',
+    old_price: null,
+    price: '59',
+    display_name: '🚀 DAILY BOOST',
+    features: [
+      '💬 <b>151</b> запрос на день',
+      '⚡ <b>ВСЁ</b> из Базового',
+      '📅 <b>1</b> день',
+    ],
+  },
+  {
     _id: 'base',
     old_price: '149',
     price: '99',
@@ -80,17 +91,6 @@ const plans = [
       '🖼️ Работа с фото',
       '📂 Анализ файлов',
       '🔍 Поиск в интернете',
-    ],
-  },
-  {
-    _id: 'daily_boost',
-    old_price: null,
-    price: '59',
-    display_name: '🚀 DAILY BOOST',
-    features: [
-      '💬 <b>151</b> запрос на день',
-      '⚡ <b>ВСЁ</b> из Базового',
-      '📅 <b>1</b> день',
     ],
   },
 ];
