@@ -11,6 +11,8 @@ const API_BASE = process.env.API_BASE;
 declare global {
   interface Window {
     ym(a0: number, a1: string, a2: string): void;
+    p(a0: string): void;
+    mp(): void;
   }
 }
 

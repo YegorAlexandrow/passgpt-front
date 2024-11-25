@@ -31,13 +31,18 @@
             c.atLeastOneMessageSentNow
           "
           class="q-mx-sm bg-secondary"
-          @click="c.isShowPlans = true"
+          @click="
+            () => {
+              c.miniPlansTitle = 'ОТКРЫТЬ БОЛЬШЕ ВОЗМОЖНОСТЕЙ';
+              c.isShowMiniPlans = true;
+            }
+          "
           rounded
           flat
           no-caps
         >
-          Осталось {{ messagesLeft }}
-          {{ getDeclensionOfMessages(messagesLeft) }}
+          Осталось {{ Math.max(0, messagesLeft) }}
+          {{ getDeclensionOfMessages(Math.max(0, messagesLeft)) }}
         </q-btn>
         <q-space></q-space>
         <BuyButton></BuyButton>
@@ -310,7 +315,11 @@ onMounted(async () => {
   // if (isMobile())
   leftDrawerOpen.value = false;
 
-  window.addEventListener('hashchange', () => console.log('KEKUSHKA'));
+  window.p = c.purchase;
+  window.mp = () => {
+    c.miniPlansTitle = 'ОТКРЫТЬ БОЛЬШЕ ВОЗМОЖНОСТЕЙ';
+    c.isShowMiniPlans = true;
+  };
 });
 
 watch(

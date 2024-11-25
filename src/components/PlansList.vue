@@ -15,21 +15,19 @@
           <q-space></q-space>
           <div class="col-auto text-h5 text-primary" v-if="plan.price">
             <!-- Если есть скидка, выводим старую цену с зачёркиванием -->
-            <span
+            <!-- <span
               v-if="plan.discount"
               class="text-negative"
               style="text-decoration: line-through"
             >
               {{ `${plan.price} ₽` }}
-            </span>
+            </span> -->
             <!-- Отображение скидочной цены, если она указана -->
-            <span v-if="plan.discount" class="q-ml-sm text-bold">{{
+            <!-- <span v-if="plan.discount" class="q-ml-sm text-bold">{{
               `${plan.discount} ₽`
-            }}</span>
+            }}</span> -->
             <!-- Отображение обычной цены, если скидка не указана -->
-            <span class="q-ml-sm text-bold" v-else>{{
-              `${plan.price} ₽`
-            }}</span>
+            <span class="q-ml-sm text-bold">{{ `${plan.price} ₽` }}</span>
           </div>
         </q-card-section>
 
@@ -135,10 +133,35 @@ const plans = [
     },
   },
   {
+    _id: 'daily_boost',
+    display_name: '🚀DAILY BOOST',
+    price: '59',
+    comment: 'Интенсивный заряд возможностей на один день',
+    features: [
+      {
+        title: '<b>151</b> сообщение ChatGPT на 1 день',
+        icon: 'eva-arrowhead-up',
+      },
+      {
+        title: 'До <b>151</b> генерации картинок',
+        icon: 'eva-arrowhead-up',
+      },
+      {
+        title: '<b>ВСЕ</b> возможности тарифа 💎БАЗОВЫЙ',
+        icon: 'eva-plus',
+        subtitle: '',
+      },
+    ],
+    action: {
+      title: 'Начать сейчас',
+      callback: () => c.purchase('daily_boost'),
+    },
+  },
+  {
     _id: 'base',
     display_name: '💎БАЗОВЫЙ',
     price: '149',
-    discount: '99', // Указываем скидочную цену
+    // discount: '99', // Указываем скидочную цену
     comment: 'Вывести продуктивность на новый уровень!',
     features: [
       {
@@ -171,31 +194,6 @@ const plans = [
     action: {
       title: 'Начать сейчас',
       callback: () => c.purchase('base'),
-    },
-  },
-  {
-    _id: 'daily_boost',
-    display_name: '🚀DAILY BOOST',
-    price: '59',
-    comment: 'Интенсивный заряд возможностей на один день',
-    features: [
-      {
-        title: '<b>151</b> сообщение ChatGPT на день',
-        icon: 'eva-arrowhead-up',
-      },
-      {
-        title: 'До <b>151</b> генерации картинок',
-        icon: 'eva-arrowhead-up',
-      },
-      {
-        title: '<b>ВСЕ</b> возможности тарифа 💎БАЗОВЫЙ',
-        icon: 'eva-plus',
-        subtitle: '',
-      },
-    ],
-    action: {
-      title: 'Начать сейчас',
-      callback: () => c.purchase('daily_boost'),
     },
   },
   // {
