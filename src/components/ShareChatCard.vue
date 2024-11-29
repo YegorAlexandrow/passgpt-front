@@ -18,14 +18,11 @@
         <template v-slot:append>
           <q-icon
             :name="copied ? 'eva-checkmark-outline' : 'eva-copy-outline'"
+            @click="copyLink"
           ></q-icon>
         </template>
       </q-input>
     </q-card-section>
-
-    <q-card-actions align="right">
-      <q-btn flat label="Закрыть" color="primary" @click="closeDialog" />
-    </q-card-actions>
   </q-card>
 </template>
 
@@ -40,7 +37,6 @@ const props = defineProps({
   },
 });
 
-const isDialogOpen = ref(false);
 const copied = ref(false);
 const qrCode = ref<HTMLDivElement | null>(null);
 
@@ -64,11 +60,6 @@ onMounted(() => {
   if (qrCode.value) qrCodeInstance.append(qrCode.value);
   linkProxy.value = props.link;
 });
-
-// Функция для закрытия диалога
-const closeDialog = () => {
-  isDialogOpen.value = false;
-};
 
 // Функция для копирования ссылки в буфер обмена
 const copyLink = () => {

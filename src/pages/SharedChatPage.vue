@@ -1,5 +1,22 @@
 <template>
   <q-page class="q-pb-md column q-mx-auto" style="max-width: 820px">
+    <a href="/?utm_source=shared_chat">
+      <img
+        id="logo-header"
+        :src="
+          $q.dark.isActive ? '/images/logo_white.svg' : '/images/logo_grey.svg'
+        "
+        v-if="!$q.platform.is.mobile"
+        style="
+          height: 48px;
+          left: 12px;
+          top: 12px;
+          position: fixed;
+          cursor: pointer;
+        "
+      />
+    </a>
+
     <div
       class="col q-px-md"
       v-if="!c.isChatLoading"
@@ -58,6 +75,26 @@
         @click="scrollDown"
       />
     </div>
+    <div class="col" style="position: fixed; bottom: 0; right: 0">
+      <q-btn
+        unelevated
+        round
+        icon="eva-question-mark-circle-outline"
+        dense
+        size="md"
+      >
+        <q-menu class="q-card--bordered">
+          <q-list class="text-body2" style="min-width: 150px">
+            <q-item clickable v-close-popup href="https://wowgpt.ru/offer">
+              <q-item-section> Пользовательское соглашение </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup href="https://wowgpt.ru/privacy">
+              <q-item-section> Политика конфиденциальности </q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
+    </div>
   </q-page>
 </template>
 
@@ -66,8 +103,10 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useChatStore } from 'src/stores/chatStore';
 import MarkDownRenderer from 'src/components/MarkDownRenderer.vue';
 import ToolLabel from 'src/components/ToolLabel.vue';
+import { useQuasar } from 'quasar';
 
 const c = useChatStore();
+const $q = useQuasar();
 
 const scrollPosition = ref(0);
 const maxScrollPosition = ref(1);
@@ -127,5 +166,9 @@ onBeforeUnmount(() => {
 }
 .no-bg {
   background: none !important;
+}
+.q-menu {
+  box-shadow: none !important;
+  max-width: unset !important;
 }
 </style>

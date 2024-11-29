@@ -106,12 +106,14 @@ const downloadImage = async (imageSrc) => {
 };
 
 watch(rating, () => {
-  c.rate(rating.value, props.content.substring(0, 120));
+  c.rate(rating.value, props.content.substring(0, 140));
 });
 
 async function onCopy() {
   await navigator.clipboard.writeText(props.content);
   copied.value = true;
+
+  window.ym && window.ym(98810411, 'reachGoal', 'COPY_MESSAGE');
 }
 
 const md = new MarkdownIt({

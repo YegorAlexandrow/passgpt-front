@@ -20,9 +20,21 @@
           size="md"
           round
           flat
-          class="text-primary bg-secondary"
+          class="text-primary bg-secondary q-mr-sm"
           @click="newChat"
         ></q-btn>
+        <q-btn
+          v-if="!isMobile() && c.currentChat"
+          color="primary"
+          icon="ios_share"
+          size="md"
+          rounded
+          flat
+          class="text-primary bg-secondary q-mr-sm q-py-sm"
+          @click="shareChat(c.currentChat)"
+        >
+          <span class="q-pl-xs">Поделиться</span>
+        </q-btn>
         <q-btn
           v-if="
             messagesLeft != null &&
@@ -282,6 +294,8 @@ async function shareChat(chat: Chat) {
   await c.patchChat(chat, chat.display_name, true);
   shareChatDialogLink.value = `${location.origin}/share?c=${chat.id}`;
   showShareChatDialog.value = true;
+
+  window.ym && window.ym(98810411, 'reachGoal', 'SHARE_CHAT');
 }
 
 watch(
@@ -315,10 +329,14 @@ onMounted(async () => {
   // if (isMobile())
   leftDrawerOpen.value = false;
 
-  window.p = c.purchase;
+  window.p = (x: string) => {
+    c.purchase(x);
+    window.ym && window.ym(98810411, 'reachGoal', 'PURCHASE_FROM_CHAT');
+  };
   window.mp = () => {
     c.miniPlansTitle = 'ОТКРЫТЬ БОЛЬШЕ ВОЗМОЖНОСТЕЙ';
     c.isShowMiniPlans = true;
+    window.ym && window.ym(98810411, 'reachGoal', 'PLANS_FROM_CHAT');
   };
 });
 
