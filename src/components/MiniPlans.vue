@@ -82,9 +82,9 @@ const plans = [
     ],
   },
   {
-    _id: 'base',
-    old_price: null,
-    price: '149',
+    _id: 'base1',
+    old_price: '149',
+    price: '1',
     display_name: '💎 БАЗОВЫЙ',
     features: [
       '💬 <b>42</b> запроса в день',

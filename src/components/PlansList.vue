@@ -15,19 +15,21 @@
           <q-space></q-space>
           <div class="col-auto text-h5 text-primary" v-if="plan.price">
             <!-- Если есть скидка, выводим старую цену с зачёркиванием -->
-            <!-- <span
+            <span
               v-if="plan.discount"
               class="text-negative"
               style="text-decoration: line-through"
             >
               {{ `${plan.price} ₽` }}
-            </span> -->
+            </span>
             <!-- Отображение скидочной цены, если она указана -->
-            <!-- <span v-if="plan.discount" class="q-ml-sm text-bold">{{
+            <span v-if="plan.discount" class="q-ml-sm text-bold">{{
               `${plan.discount} ₽`
-            }}</span> -->
+            }}</span>
             <!-- Отображение обычной цены, если скидка не указана -->
-            <span class="q-ml-sm text-bold">{{ `${plan.price} ₽` }}</span>
+            <span v-else class="q-ml-sm text-bold">{{
+              `${plan.price} ₽`
+            }}</span>
           </div>
         </q-card-section>
 
@@ -158,10 +160,10 @@ const plans = [
     },
   },
   {
-    _id: 'base',
+    _id: 'base1',
     display_name: '💎БАЗОВЫЙ',
     price: '149',
-    // discount: '99', // Указываем скидочную цену
+    discount: '1', // Указываем скидочную цену
     comment: 'Вывести продуктивность на новый уровень!',
     features: [
       {
@@ -190,10 +192,15 @@ const plans = [
         subtitle: 'Загружайте документы, презентации, таблицы, код',
         icon: 'eva-plus',
       },
+      {
+        title: 'Первый месяц - 1 рубль',
+        subtitle: 'Дальше 149 руб/мес. Отменить можно в любое время',
+        icon: 'eva-check',
+      },
     ],
     action: {
       title: 'Начать сейчас',
-      callback: () => c.purchase('base'),
+      callback: () => c.purchase('base1'),
     },
   },
   // {

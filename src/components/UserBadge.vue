@@ -90,6 +90,7 @@ function getSubDisplayName(sub: string) {
       free: 'Пробный🌱',
       base: 'Базовый💎',
       base_special1: 'Базовый💎',
+      base1: 'Базовый💎',
       pro: 'ПРО👑',
       daily_boost: 'DAILY BOOST⚡️',
     }[sub] || sub

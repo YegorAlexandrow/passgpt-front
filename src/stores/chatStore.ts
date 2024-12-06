@@ -236,35 +236,6 @@ export const useChatStore = defineStore('chatStore', () => {
     if (response.ok) {
       const resp = await response.json();
       createErrorNotification(resp.message);
-
-      if (rating == 5) {
-        const prompt = `Спасибо большое за вашу высокую оценку! 😊 Мы очень рады, что вам нравится наш сервис.💜
-
-В качестве особой благодарности предлагаем вам скидку **40%** на подписку! 🎉
-
- - 🖼️ Анализ изображений и работа с фото
- - 📂 Обработка файлов
- - 🔍 Поиск в интернете
- - 💬 Больше сообщений в день
-
-[<button>🎁 **Оформить подписку!** 89₽ 🎁</button>](/javascript:p('base_special1'))
-`;
-        const m1: Message = {
-          text: '',
-          role: 'assistant',
-          progress: true,
-        };
-        const m2: Message = {
-          text: prompt,
-          role: 'assistant',
-          progress: false,
-        };
-        messages.value.push(m1);
-        setTimeout(() => {
-          messages.value.pop();
-          messages.value.push(m2);
-        }, 800);
-      }
     }
 
     window.ym && window.ym(98810411, 'reachGoal', `RATING_${rating}`);

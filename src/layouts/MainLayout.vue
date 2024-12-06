@@ -326,6 +326,8 @@ onMounted(async () => {
   await c.fetchActualSubscription();
   await c.listChats();
 
+  if (urlParams.get('mp')) c.isShowMiniPlans = true;
+
   // if (isMobile())
   leftDrawerOpen.value = false;
 
