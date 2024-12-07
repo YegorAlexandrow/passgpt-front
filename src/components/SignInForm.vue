@@ -31,9 +31,11 @@
   </q-card>
 </template>
 <script setup lang="ts">
+import { useQuasar } from 'quasar';
 import { useChatStore } from 'src/stores/chatStore';
 import { ref } from 'vue';
 
+const $q = useQuasar();
 const c = useChatStore();
 
 const options = ref([
@@ -43,14 +45,19 @@ const options = ref([
     logoPath: '/images/logo_yandex.svg',
   },
   {
+    provider: 'google',
+    display: 'Google',
+    logoPath: '/images/logo_google.svg',
+  },
+  {
     provider: 'vk',
     display: 'VK ID',
     logoPath: '/images/logo_vk.svg',
   },
   {
-    provider: 'google',
-    display: 'Google',
-    logoPath: '/images/logo_google.svg',
+    provider: 'github',
+    display: 'GitHub',
+    logoPath: `/images/logo_github_${$q.dark.isActive ? 'white' : 'black'}.svg`,
   },
   // {
   //   provider: 'ok',
