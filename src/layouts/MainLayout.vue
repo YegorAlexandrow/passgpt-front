@@ -23,7 +23,7 @@
           class="text-primary bg-secondary q-mr-sm"
           @click="newChat"
         ></q-btn>
-        <q-btn
+        <!-- <q-btn
           v-if="!isMobile() && c.currentChat"
           color="primary"
           icon="ios_share"
@@ -34,7 +34,7 @@
           @click="shareChat(c.currentChat)"
         >
           <span class="q-pl-xs">Поделиться</span>
-        </q-btn>
+        </q-btn> -->
         <q-btn
           v-if="
             messagesLeft != null &&
@@ -53,8 +53,8 @@
           flat
           no-caps
         >
-          Осталось {{ Math.max(0, messagesLeft) }}
-          {{ getDeclensionOfMessages(Math.max(0, messagesLeft)) }}
+          {{ Math.max(0, messagesLeft) }}
+          сообщ.
         </q-btn>
         <q-space></q-space>
         <BuyButton></BuyButton>
@@ -186,6 +186,28 @@
     >
       <MiniPlans :title="c.miniPlansTitle"></MiniPlans>
     </q-dialog>
+    <q-dialog
+      v-model="c.isShowPaymentDialog"
+      transition-show="slide-up"
+      transition-hide="slide-down"
+      transition-duration="500"
+      persistent
+    >
+      <div>
+        <div class="row">
+          <q-space></q-space>
+          <q-btn
+            dense
+            round
+            flat
+            icon="close"
+            size="md"
+            @click="c.isShowPaymentDialog = false"
+          />
+        </div>
+        <PaymentDialog></PaymentDialog>
+      </div>
+    </q-dialog>
   </q-layout>
 </template>
 
@@ -201,6 +223,7 @@ import PlansList from 'src/components/PlansList.vue';
 import MiniPlans from 'src/components/MiniPlans.vue';
 import { Chat } from 'src/models/Chat';
 import { computed } from 'vue';
+import PaymentDialog from 'src/components/PaymentDialog.vue';
 
 const c = useChatStore();
 const $q = useQuasar();
@@ -217,25 +240,25 @@ function newChat() {
 //   console.log(resp);
 // }
 
-const getDeclensionOfMessages = (count: number) => {
-  const lastDigit = count % 10;
-  const lastTwoDigits = count % 100;
+// const getDeclensionOfMessages = (count: number) => {
+//   const lastDigit = count % 10;
+//   const lastTwoDigits = count % 100;
 
-  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
-    return 'сообщений';
-  }
+//   if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+//     return 'сообщений';
+//   }
 
-  switch (lastDigit) {
-    case 1:
-      return 'сообщение';
-    case 2:
-    case 3:
-    case 4:
-      return 'сообщения';
-    default:
-      return 'сообщений';
-  }
-};
+//   switch (lastDigit) {
+//     case 1:
+//       return 'сообщение';
+//     case 2:
+//     case 3:
+//     case 4:
+//       return 'сообщения';
+//     default:
+//       return 'сообщений';
+//   }
+// };
 
 const messagesLeft = computed(() => {
   if (c.currentSubscription != null) {
@@ -325,6 +348,7 @@ onMounted(async () => {
   await c.fetchUser();
   await c.fetchActualSubscription();
   await c.listChats();
+  await c.listSubscriptions();
 
   if (urlParams.get('mp')) c.isShowMiniPlans = true;
 

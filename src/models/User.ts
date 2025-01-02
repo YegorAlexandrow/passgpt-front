@@ -10,7 +10,7 @@ export interface Subscription {
   frozen_at?: number | null; // Поле может быть необязательным или null
 
   // Data fields
-  type: SubType; // Тип подписки
+  type: SubType | string; // Тип подписки
   status: SubStatus; // Статус подписки
   priority: number;
   last_message_at: number;

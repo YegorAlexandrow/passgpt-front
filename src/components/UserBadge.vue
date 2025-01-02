@@ -58,6 +58,21 @@
           </q-item-section>
           <q-item-section> Настройки </q-item-section>
         </q-item>
+        <q-item clickable v-ripple @click="showForm()">
+          <q-item-section avatar>
+            <q-icon name="eva-bulb-outline" />
+          </q-item-section>
+          <q-item-section>
+            <div>
+              Голосуем за фичи!<q-badge
+                color="accent"
+                floating
+                rounded
+                class="q-mr-lg q-mt-sm"
+              />
+            </div>
+          </q-item-section>
+        </q-item>
         <q-item clickable v-ripple @click="c.logout">
           <q-item-section avatar>
             <q-icon name="mdi-logout" />
@@ -72,13 +87,20 @@
   </q-dialog>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useChatStore } from 'src/stores/chatStore';
 import SettingsCard from 'src/components/SettingsCard.vue';
 
 const c = useChatStore();
 
 const showSettings = ref(false);
+
+function showForm() {
+  window.open(
+    'https://forms.yandex.ru/cloud/6764fafbeb6146e1233b3687/',
+    '_blank',
+  );
+}
 
 function onCloseSettings() {
   showSettings.value = false;
@@ -96,6 +118,32 @@ function getSubDisplayName(sub: string) {
     }[sub] || sub
   );
 }
+
+onMounted(() => {
+  function findIframe(frameElement: MessageEventSource | null) {
+    var iframeList = document.querySelectorAll('iframe');
+
+    for (var i = 0; i < iframeList.length; ++i) {
+      if (iframeList[i].contentWindow === frameElement) {
+        return iframeList[i];
+      }
+    }
+  }
+
+  function receiveMessage(e: MessageEvent) {
+    try {
+      var data = JSON.parse(e.data);
+      var height = data['iframe-height'];
+      var iframe;
+
+      if (height && (iframe = findIframe(e.source))) {
+        iframe.style.height = height + 'px';
+      }
+    } catch (err) {}
+  }
+
+  window.addEventListener('message', receiveMessage, false);
+});
 </script>
 <style lang="scss">
 .q-menu {

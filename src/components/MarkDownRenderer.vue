@@ -238,7 +238,6 @@ watch(
         }
 
         markdownContainer.value.querySelectorAll('a').forEach((a) => {
-          console.log(a, a.href);
           if (a.href.includes('javascript:')) {
             a.href = 'javascript:' + a.href.split('javascript:')[1];
           } else a.target = '_blank';

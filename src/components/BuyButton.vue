@@ -20,7 +20,7 @@
       Войти
     </template>
     <template v-else-if="c.currentSubscription?.type == 'free'">
-      Открыть больше 🚀
+      Открыть больше 🎁
     </template>
     <template
       v-else-if="
@@ -29,52 +29,25 @@
     >
       Взять DAILY BOOST
     </template>
-
-    <q-dialog
-      v-model="isShowPlans"
-      full-width
-      transition-show="slide-up"
-      transition-hide="slide-down"
-      transition-duration="500"
-    >
-      <div>
-        <div class="row">
-          <q-space></q-space>
-          <q-btn
-            dense
-            round
-            icon="close"
-            color="primary"
-            size="sm"
-            class="q-mx-sm"
-            @click="isShowPlans = false"
-          />
-        </div>
-        <PlansList class="q-pa-none" :show-free-button="false"></PlansList>
-      </div>
-    </q-dialog>
   </q-btn>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useChatStore } from 'src/stores/chatStore';
-import PlansList from 'src/components/PlansList.vue';
 import { Platform } from 'quasar';
 // import { useRouter } from 'vue-router';
 
 const c = useChatStore();
 // const router = useRouter();
 
-const isShowPlans = ref(false);
-
 function onClick() {
   if (!c.isUserLoading && c.currentUser == null) {
     c.showSignInForm = true;
   } else if (Platform.is.mobile) {
     // router.push('/subscribe');
-    isShowPlans.value = true;
+    c.isShowPlans = true;
   } else {
-    isShowPlans.value = true;
+    c.isShowPlans = true;
   }
 }
 

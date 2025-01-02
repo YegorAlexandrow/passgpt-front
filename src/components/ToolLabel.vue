@@ -25,6 +25,7 @@ const iconLabel = computed(() => {
     search_web: 'eva-search-outline',
     fetch_news: 'mdi-newspaper-variant-outline',
     generate_image: 'eva-brush-outline',
+    plot_chart: 'eva-activity-outline',
   }[props.message.tool_name || ''];
 });
 </script>

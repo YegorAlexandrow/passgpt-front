@@ -58,7 +58,9 @@
   </q-card>
 </template>
 <script setup lang="ts">
+import { SubStatus } from 'src/models/User';
 import { useChatStore } from 'src/stores/chatStore';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const c = useChatStore();
 
@@ -69,7 +71,29 @@ const props = defineProps({
   },
 });
 
-const plans = [
+const isBaseOneAllowed = computed(() => {
+  return c.subscriptionHistory.every(
+    (s) =>
+      s.type != 'base1' ||
+      ![
+        SubStatus.ACTIVE,
+        SubStatus.FROZEN,
+        SubStatus.CANCELED,
+        SubStatus.EXPIRED,
+      ].includes(s.status),
+  );
+});
+
+watch(
+  () => props.title,
+  () => c.listSubscriptions(),
+);
+
+onMounted(async () => {
+  await c.listSubscriptions();
+});
+
+const plans = ref([
   {
     _id: 'daily_boost',
     old_price: null,
@@ -83,8 +107,8 @@ const plans = [
   },
   {
     _id: 'base1',
-    old_price: '149',
-    price: '1',
+    old_price: isBaseOneAllowed.value ? '149' : undefined,
+    price: isBaseOneAllowed.value ? '1' : '149',
     display_name: '💎 БАЗОВЫЙ',
     features: [
       '💬 <b>42</b> запроса в день',
@@ -93,6 +117,6 @@ const plans = [
       '🔍 Поиск в интернете',
     ],
   },
-];
+]);
 </script>
 <style lang="scss" scoped></style>

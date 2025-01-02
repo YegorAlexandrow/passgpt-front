@@ -4,7 +4,7 @@
       <q-card
         class="col q-ma-xs column scroll-item"
         v-for="plan in filteredPlans"
-        :key="plan._id"
+        :key="plan._id + c.subscriptionHistory.length"
         flat
         bordered
       >
@@ -88,14 +88,28 @@
 </template>
 
 <script setup lang="ts">
+import { SubStatus } from 'src/models/User';
 import { useChatStore } from 'src/stores/chatStore';
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 const c = useChatStore();
 
 function goToApp() {
   location.href = 'https://ask.wowgpt.ru';
 }
+
+const isBaseOneAllowed = computed(() => {
+  return c.subscriptionHistory.every(
+    (s) =>
+      s.type != 'base1' ||
+      ![
+        SubStatus.ACTIVE,
+        SubStatus.FROZEN,
+        SubStatus.CANCELED,
+        SubStatus.EXPIRED,
+      ].includes(s.status),
+  );
+});
 
 const props = defineProps({
   showFree: {
@@ -112,7 +126,11 @@ const props = defineProps({
   },
 });
 
-const plans = [
+onMounted(async () => {
+  await c.listSubscriptions();
+});
+
+const plans = ref([
   {
     _id: 'free',
     display_name: '🌱ПРОБНЫЙ',
@@ -120,11 +138,11 @@ const plans = [
     comment: 'Для тех, кто только начинают работать с ChatGPT',
     features: [
       {
-        title: 'До <b>6</b> сообщений ChatGPT в день',
+        title: 'До <b>12</b> сообщений ChatGPT в день',
         icon: 'eva-checkmark',
       },
       {
-        title: 'До <b>6</b> генераций картинок в день',
+        title: '<b>5</b> генераций картинок',
         icon: 'eva-checkmark',
         subtitle: '',
       },
@@ -163,7 +181,7 @@ const plans = [
     _id: 'base1',
     display_name: '💎БАЗОВЫЙ',
     price: '149',
-    discount: '1', // Указываем скидочную цену
+    discount: isBaseOneAllowed.value ? '1' : undefined, // Указываем скидочную цену
     comment: 'Вывести продуктивность на новый уровень!',
     features: [
       {
@@ -175,81 +193,41 @@ const plans = [
         icon: 'eva-arrowhead-up',
       },
       {
-        title: 'Поиск в интернете 🔍',
+        title: 'Поиск в интернете',
         icon: 'eva-plus',
       },
       {
-        title: 'Доступ к новостям 📰',
+        title: 'Доступ к новостям',
         icon: 'eva-plus',
       },
       {
-        title: 'Работа с фото 🖼️',
+        title: 'Работа с фото',
         subtitle: 'Для анализа изображений, распознавания текста',
         icon: 'eva-plus',
       },
       {
-        title: 'Анализ файлов 📂',
+        title: 'Анализ файлов',
         subtitle: 'Загружайте документы, презентации, таблицы, код',
         icon: 'eva-plus',
       },
-      {
-        title: 'Первый месяц - 1 рубль',
-        subtitle: 'Дальше 149 руб/мес. Отменить можно в любое время',
-        icon: 'eva-check',
-      },
+      isBaseOneAllowed.value
+        ? {
+            title: '🎁 Первый месяц - 1 рубль',
+            subtitle: 'Дальше 149 руб/мес. Отменить можно в любой момент',
+            icon: 'eva-check',
+          }
+        : { title: '' },
     ],
     action: {
       title: 'Начать сейчас',
       callback: () => c.purchase('base1'),
     },
   },
-  // {
-  //   _id: 'pro',
-  //   display_name: '👑ПРО',
-  //   price: '399',
-  //   comment: 'Полный доступ к эксклюзивным функциям и мощным инструментам',
-  //   features: [
-  //     {
-  //       title: '<b>101</b> сообщение ChatGPT в день',
-  //       icon: 'eva-arrowhead-up',
-  //     },
-  //     {
-  //       title: 'До <b>101</b> генерации картинок',
-  //       icon: 'eva-arrowhead-up',
-  //     },
-  //     {
-  //       title: 'Работа с фото',
-  //       subtitle: 'Для анализа изображений, распознавания текста',
-  //       icon: 'eva-checkmark',
-  //     },
-  //     {
-  //       title: 'Поиск в интернете',
-  //       icon: 'eva-checkmark',
-  //     },
-  //     {
-  //       title: 'Доступ к актуальным новостям',
-  //       icon: 'eva-checkmark',
-  //     },
-  //     {
-  //       title: 'Эксклюзивный доступ к <strong>GPT-o1</strong>',
-  //       subtitle: 'Для самых сложных задач и решений',
-  //       icon: 'eva-plus',
-  //     },
-  //     {
-  //       title: 'Будет позже!🕓',
-  //       icon: '',
-  //     },
-  //   ],
-  //   action: {
-  //     title: 'Следить за обновлениями',
-  //     callback: () => c.subscribeEmail('pro_waitlist'),
-  //   },
-  // },
-];
+]);
 
 // Фильтрация планов в зависимости от showFree
 const filteredPlans = computed(() => {
-  return plans.filter((x) => x._id != 'free' || props.showFree);
+  return plans.value.filter((x) => x._id != 'free' || props.showFree);
 });
 </script>
 

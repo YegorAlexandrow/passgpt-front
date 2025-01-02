@@ -9,11 +9,22 @@ import { getMaterialFileIcon } from 'file-extension-icon-js';
 const API_BASE = process.env.API_BASE;
 
 declare global {
+  interface Tmr {
+    push(a0: object): void;
+  }
+
   interface Window {
     ym(a0: number, a1: string, a2: string): void;
+    _tmr: Tmr;
     p(a0: string): void;
     mp(): void;
+    YooMoneyCheckoutWidget: typeof YooMoneyCheckoutWidget;
   }
+}
+
+declare class YooMoneyCheckoutWidget {
+  constructor(a0: object);
+  render(a0?: string): void;
 }
 
 export const useChatStore = defineStore('chatStore', () => {
@@ -27,6 +38,7 @@ export const useChatStore = defineStore('chatStore', () => {
   const isChatLoading = ref<boolean>(false);
   const isSubLoading = ref<boolean>(false);
   const isShowPlans = ref<boolean>(false);
+  const isShowPaymentDialog = ref<boolean>(false);
   const showSignInForm = ref(false);
 
   const isShowMiniPlans = ref<boolean>(false);
@@ -37,6 +49,9 @@ export const useChatStore = defineStore('chatStore', () => {
   const subscriptionHistory = ref<Subscription[]>([]);
 
   const atLeastOneMessageSentNow = ref<boolean>(false);
+
+  const paymentConfirmationToken = ref<string | null>(null);
+  const paymentSubType = ref<string>('base1');
 
   const $q = useQuasar();
 
@@ -199,12 +214,17 @@ export const useChatStore = defineStore('chatStore', () => {
     } else {
       const resp = await response.json();
       console.log(resp);
-      window.location.href = resp.payment_url;
+
+      if (resp.confirmation_token) {
+        paymentConfirmationToken.value = resp.confirmation_token;
+        paymentSubType.value = type;
+        isShowPlans.value = false;
+        isShowMiniPlans.value = false;
+        isShowPaymentDialog.value = true;
+      } else {
+        window.location.href = resp.payment_url;
+      }
     }
-    // } catch (e) {
-    //   console.log(e);
-    //   createErrorNotification('Произошла ошибка во время покупки.');
-    // }
   }
 
   async function subscribeEmail(topic: string) {
@@ -445,6 +465,12 @@ export const useChatStore = defineStore('chatStore', () => {
             // console.log('Stream finished');
             isMessageLoading.value = false;
             window.ym && window.ym(98810411, 'reachGoal', 'RECEIVE_MESSAGE');
+            window._tmr &&
+              window._tmr.push({
+                type: 'reachGoal',
+                id: 3591987,
+                goal: 'RECEIVE_MESSAGE',
+              });
             return;
           }
 
@@ -583,6 +609,9 @@ export const useChatStore = defineStore('chatStore', () => {
     currentSubscription,
     subscriptionHistory,
     showSignInForm,
+    isShowPaymentDialog,
+    paymentConfirmationToken,
+    paymentSubType,
     sendMessage,
     listChats,
     fetchChatMessages,
