@@ -42,6 +42,7 @@
             label="Выбор темы"
             outlined
           />
+          <InstructionsForm></InstructionsForm>
         </q-card-section>
       </q-tab-panel>
 
@@ -184,6 +185,7 @@ import { onMounted, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import PrettyLink from 'src/components/PrettyLink.vue';
 import BuyButton from 'src/components/BuyButton.vue';
+import InstructionsForm from 'src/components/InstructionsForm.vue';
 import { Dark } from 'quasar';
 import { useChatStore } from 'src/stores/chatStore';
 

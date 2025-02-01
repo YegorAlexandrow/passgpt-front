@@ -58,7 +58,7 @@
   </q-card>
 </template>
 <script setup lang="ts">
-import { SubStatus } from 'src/models/User';
+import { Subscription, SubStatus } from 'src/models/User';
 import { useChatStore } from 'src/stores/chatStore';
 import { computed, onMounted, ref, watch } from 'vue';
 
@@ -73,7 +73,7 @@ const props = defineProps({
 
 const isBaseOneAllowed = computed(() => {
   return c.subscriptionHistory.every(
-    (s) =>
+    (s: Subscription) =>
       s.type != 'base1' ||
       ![
         SubStatus.ACTIVE,
@@ -106,12 +106,24 @@ const plans = ref([
     ],
   },
   {
-    _id: 'base1',
+    _id: isBaseOneAllowed.value ? 'base1' : 'base',
     old_price: isBaseOneAllowed.value ? '149' : undefined,
     price: isBaseOneAllowed.value ? '1' : '149',
     display_name: '💎 БАЗОВЫЙ',
     features: [
       '💬 <b>42</b> запроса в день',
+      '🖼️ Работа с фото',
+      '📂 Анализ файлов',
+      '🔍 Поиск в интернете',
+    ],
+  },
+  {
+    _id: 'pro',
+    price: '399',
+    display_name: '👑 ПРО',
+    features: [
+      '💬 До <b>200</b> запросов в день',
+      '💬 До <b>40</b> запросов GPT-4o<br/>в день',
       '🖼️ Работа с фото',
       '📂 Анализ файлов',
       '🔍 Поиск в интернете',

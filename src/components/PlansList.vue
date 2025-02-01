@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { SubStatus } from 'src/models/User';
+import { Subscription, SubStatus } from 'src/models/User';
 import { useChatStore } from 'src/stores/chatStore';
 import { computed, onMounted, ref } from 'vue';
 
@@ -99,15 +99,18 @@ function goToApp() {
 }
 
 const isBaseOneAllowed = computed(() => {
-  return c.subscriptionHistory.every(
-    (s) =>
-      s.type != 'base1' ||
-      ![
-        SubStatus.ACTIVE,
-        SubStatus.FROZEN,
-        SubStatus.CANCELED,
-        SubStatus.EXPIRED,
-      ].includes(s.status),
+  return (
+    props.forLanding ||
+    c.subscriptionHistory.every(
+      (s: Subscription) =>
+        s.type != 'base1' ||
+        ![
+          SubStatus.ACTIVE,
+          SubStatus.FROZEN,
+          SubStatus.CANCELED,
+          SubStatus.EXPIRED,
+        ].includes(s.status),
+    )
   );
 });
 
@@ -142,7 +145,7 @@ const plans = ref([
         icon: 'eva-checkmark',
       },
       {
-        title: '<b>5</b> генераций картинок',
+        title: '<b>4</b> генерации картинок',
         icon: 'eva-checkmark',
         subtitle: '',
       },
@@ -178,7 +181,7 @@ const plans = ref([
     },
   },
   {
-    _id: 'base1',
+    _id: isBaseOneAllowed.value ? 'base1' : 'base',
     display_name: '💎БАЗОВЫЙ',
     price: '149',
     discount: isBaseOneAllowed.value ? '1' : undefined, // Указываем скидочную цену
@@ -189,7 +192,7 @@ const plans = ref([
         icon: 'eva-arrowhead-up',
       },
       {
-        title: 'До <b>42</b> генераций картинок в день',
+        title: 'До <b>10</b> генераций картинок в день',
         icon: 'eva-arrowhead-up',
       },
       {
@@ -220,7 +223,50 @@ const plans = ref([
     ],
     action: {
       title: 'Начать сейчас',
-      callback: () => c.purchase('base1'),
+      callback: () => c.purchase(isBaseOneAllowed.value ? 'base1' : 'base'),
+    },
+  },
+  {
+    _id: 'pro',
+    display_name: '👑 ПРО',
+    price: '399',
+    comment: 'Для сложных задач',
+    features: [
+      {
+        title: 'До <b>200</b> сообщений ChatGPT в день',
+        icon: 'eva-arrowhead-up',
+      },
+      {
+        title: 'До <b>40</b> сообщений GPT-4o в день',
+        subtitle: 'Одно сообщение GPT-4o считается за 5 сообщений GPT-4o mini',
+        icon: 'eva-arrowhead-up',
+      },
+      {
+        title: 'До <b>20</b> генераций картинок в день',
+        icon: 'eva-arrowhead-up',
+      },
+      {
+        title: 'Поиск в интернете',
+        icon: 'eva-plus',
+      },
+      {
+        title: 'Доступ к новостям',
+        icon: 'eva-plus',
+      },
+      {
+        title: 'Работа с фото',
+        subtitle: 'Для анализа изображений, распознавания текста',
+        icon: 'eva-plus',
+      },
+      {
+        title: 'Анализ файлов',
+        subtitle: 'Загружайте документы, презентации, таблицы, код',
+        icon: 'eva-plus',
+      },
+    ],
+    action: {
+      title: 'Начать сейчас',
+      callback: () => c.purchase('pro'),
     },
   },
 ]);

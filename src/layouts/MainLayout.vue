@@ -23,6 +23,32 @@
           class="text-primary bg-secondary q-mr-sm"
           @click="newChat"
         ></q-btn>
+        <q-btn-dropdown
+          color="primary"
+          size="md"
+          rounded
+          flat
+          :label="c.model"
+          class="text-primary bg-secondary q-mr-sm"
+        >
+          <q-list class="text-body2" style="border-radius: 26px">
+            <q-item clickable @click="c.model = 'gpt-4o-mini'">
+              <q-item-section>
+                <q-item-label>GPT-4O-MINI</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              :disable="c.currentSubscription?.type != 'pro'"
+              @click="c.model = 'gpt-4o'"
+            >
+              <q-item-section>
+                <q-item-label>GPT-4O</q-item-label>
+                <q-item-label caption>Доступно в 👑ПРО</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
         <!-- <q-btn
           v-if="!isMobile() && c.currentChat"
           color="primary"

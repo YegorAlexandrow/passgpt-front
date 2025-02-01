@@ -56,21 +56,18 @@
           <q-item-section avatar>
             <q-icon name="eva-settings-outline" />
           </q-item-section>
-          <q-item-section> Настройки </q-item-section>
+          <q-item-section class="row">
+            <span>Настройки</span>
+          </q-item-section>
         </q-item>
-        <q-item clickable v-ripple @click="showForm()">
+        <q-item clickable v-ripple @click="c.isShowPlans = true">
           <q-item-section avatar>
-            <q-icon name="eva-bulb-outline" />
+            <q-icon name="eva-star-outline" />
           </q-item-section>
           <q-item-section>
-            <div>
-              Голосуем за фичи!<q-badge
-                color="accent"
-                floating
-                rounded
-                class="q-mr-lg q-mt-sm"
-              />
-            </div>
+            <span
+              >Тарифы <q-badge rounded color="accent">Для Вас</q-badge></span
+            >
           </q-item-section>
         </q-item>
         <q-item clickable v-ripple @click="c.logout">
@@ -94,13 +91,6 @@ import SettingsCard from 'src/components/SettingsCard.vue';
 const c = useChatStore();
 
 const showSettings = ref(false);
-
-function showForm() {
-  window.open(
-    'https://forms.yandex.ru/cloud/6764fafbeb6146e1233b3687/',
-    '_blank',
-  );
-}
 
 function onCloseSettings() {
   showSettings.value = false;

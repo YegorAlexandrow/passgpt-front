@@ -5,6 +5,7 @@ import { Message } from 'src/models/Message';
 import { Subscription, User } from 'src/models/User';
 import { useQuasar } from 'quasar';
 import { getMaterialFileIcon } from 'file-extension-icon-js';
+import { Instruction } from 'src/models/Instruction';
 
 const API_BASE = process.env.API_BASE;
 
@@ -52,6 +53,10 @@ export const useChatStore = defineStore('chatStore', () => {
 
   const paymentConfirmationToken = ref<string | null>(null);
   const paymentSubType = ref<string>('base1');
+
+  const userInstruction = ref<Instruction | null>(null);
+
+  const model = ref('gpt-4o-mini');
 
   const $q = useQuasar();
 
@@ -168,6 +173,42 @@ export const useChatStore = defineStore('chatStore', () => {
       currentUser.value = null;
     }
     isUserLoading.value = false;
+  }
+
+  async function fetchUserInstruction() {
+    try {
+      const response = await fetch(`${API_BASE}/instructions/mine`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        userInstruction.value = await response.json();
+      } else {
+        userInstruction.value = null;
+      }
+    } catch (e) {
+      userInstruction.value = null;
+    }
+  }
+
+  async function saveUserInstruction() {
+    try {
+      const response = await fetch(`${API_BASE}/instructions/mine`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userInstruction.value),
+      });
+      if (response.ok) {
+        userInstruction.value = await response.json();
+        createErrorNotification('Инструкции применены');
+        window.ym && window.ym(98810411, 'reachGoal', 'SAVE_USER_INSTRUCTION');
+      } else {
+        userInstruction.value = null;
+      }
+    } catch (e) {
+      userInstruction.value = null;
+    }
   }
 
   async function listChats() {
@@ -428,6 +469,7 @@ export const useChatStore = defineStore('chatStore', () => {
           attachments: file
             ? [{ filename: file.name, data_str: await fileToBase64(file) }]
             : null,
+          model: model.value,
         }),
         credentials: 'include',
       },
@@ -612,6 +654,8 @@ export const useChatStore = defineStore('chatStore', () => {
     isShowPaymentDialog,
     paymentConfirmationToken,
     paymentSubType,
+    userInstruction,
+    model,
     sendMessage,
     listChats,
     fetchChatMessages,
@@ -629,5 +673,7 @@ export const useChatStore = defineStore('chatStore', () => {
     checkHealth,
     rate,
     createErrorNotification,
+    fetchUserInstruction,
+    saveUserInstruction,
   };
 });
