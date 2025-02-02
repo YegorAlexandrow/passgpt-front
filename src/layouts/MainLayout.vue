@@ -16,7 +16,7 @@
         ></q-btn>
         <q-btn
           color="primary"
-          icon="eva-edit-2-outline"
+          icon="mdi-chat-plus-outline"
           size="md"
           round
           flat
@@ -28,22 +28,43 @@
           size="md"
           rounded
           flat
+          dense
+          no-caps
           :label="c.model"
-          class="text-primary bg-secondary q-mr-sm"
+          dropdown-icon="eva-chevron-down-outline"
+          class="text-primary bg-secondary q-mr-sm q-pl-md"
         >
           <q-list class="text-body2" style="border-radius: 26px">
             <q-item clickable @click="c.model = 'gpt-4o-mini'">
               <q-item-section>
-                <q-item-label>GPT-4O-MINI</q-item-label>
+                <q-item-label class="text-bold q-mt-sm q-mb-xs"
+                  >gpt-4o-mini</q-item-label
+                >
+                <q-item-label caption>Для повседневных задач</q-item-label>
               </q-item-section>
             </q-item>
             <q-item
               clickable
-              :disable="c.currentSubscription?.type != 'pro'"
+              :disable="!c.currentUser || c.currentSubscription?.type == 'free'"
+              @click="c.model = 'o3-mini'"
+            >
+              <q-item-section>
+                <q-item-label class="text-bold q-mt-sm q-mb-xs"
+                  >o3-mini</q-item-label
+                >
+                <q-item-label caption>Новая рассуждающая модель!</q-item-label>
+                <q-item-label caption>Доступно в 💎БАЗОВЫЙ</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              :disable="!c.currentUser || c.currentSubscription?.type != 'pro'"
               @click="c.model = 'gpt-4o'"
             >
               <q-item-section>
-                <q-item-label>GPT-4O</q-item-label>
+                <q-item-label class="text-bold q-mt-sm q-mb-xs"
+                  >gpt-4o</q-item-label
+                >
                 <q-item-label caption>Доступно в 👑ПРО</q-item-label>
               </q-item-section>
             </q-item>

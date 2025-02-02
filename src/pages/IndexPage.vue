@@ -1,8 +1,8 @@
 <template>
-  <div
+  <!-- <div
     class="cool-bg"
     :style="{ opacity: c.messages?.length > 1 ? 0 : 1 }"
-  ></div>
+  ></div> -->
   <q-page class="q-pb-md column q-mx-auto" style="max-width: 820px">
     <WelcomeScreen
       v-if="
@@ -62,7 +62,30 @@
         bottom: 0;
         width: 100%;
         max-width: 820px;
-        border-radius: 37px 37px 0px 0px;
+        border-radius: 32px;
+      "
+      :style="{
+        transform: isDropping ? 'scale(1.05)' : '',
+        transition: 'transform ease-in-out 0.2s',
+      }"
+      @drop="onDrop"
+      @dragenter="
+        (e: DragEvent) => {
+          e.preventDefault();
+          isDropping = true;
+        }
+      "
+      @dragover="
+        (e: DragEvent) => {
+          e.preventDefault();
+          isDropping = true;
+        }
+      "
+      @dragleave="
+        (e: DragEvent) => {
+          e.preventDefault();
+          isDropping = false;
+        }
       "
     >
       <q-btn
@@ -93,51 +116,19 @@
         class="col"
         v-model="newMessageText"
         rounded
-        outlined
+        borderless
         autogrow
         type="text"
         placeholder="Ваше сообщение..."
-        :style="{
-          transform: isDropping ? 'scale(1.05) rotate(1deg)' : '',
-          transition: 'transform ease-in-out 0.2s',
-        }"
-        input-style="padding-left: 20px; padding-right: 20px; margin-right: 20px; font-size: 1.1rem; font-weight: 400; max-height: 7em;"
+        input-style="font-size: 1.1rem; font-weight: 400; max-height: 7em;"
         @keyup.enter="
           (e: KeyboardEvent) => {
             if (!e.shiftKey && !c.isMessageLoading) sendMessage();
           }
         "
         @paste="onPaste"
-        @drop="onDrop"
-        @dragenter="
-          (e: DragEvent) => {
-            e.preventDefault();
-            isDropping = true;
-          }
-        "
-        @dragover="
-          (e: DragEvent) => {
-            e.preventDefault();
-            isDropping = true;
-          }
-        "
-        @dragleave="
-          (e: DragEvent) => {
-            e.preventDefault();
-            isDropping = false;
-          }
-        "
       >
         <template v-slot:prepend>
-          <q-btn
-            v-if="!attachedFile"
-            round
-            flat
-            @click="attachFile"
-            :loading="c.isMessageLoading"
-            icon="eva-attach"
-          ></q-btn>
-
           <div
             v-if="attachedFile"
             :style="{
@@ -160,26 +151,65 @@
             />
           </div>
         </template>
-        <template v-slot:append>
-          <q-btn
-            class="bg-primary text-white q-pl-xs msg-btn"
-            round
-            flat
-            icon="send"
-            @touchstart="sendMessage"
-            @click="sendMessage"
-            :loading="c.isMessageLoading"
-            :disable="newMessageText.length < 1"
-            style="transform: translate(6px, -1px); z-index: 8000"
-          >
-          </q-btn>
-        </template>
       </q-input>
-      <div
-        class="text-caption text-center text-grey q-mt-xs"
-        style="word-wrap: none; text-overflow: ellipsis; font-size: 0.65rem"
-      >
-        ИИ может ошибаться. Проверяйте важную информацию.
+      <div class="row" style="margin-right: 2px">
+        <q-toggle
+          color="amber"
+          false-value="gpt-4o-mini"
+          true-value="o3-mini"
+          v-model="c.model"
+          :toggle-indeterminate="false"
+          class="text-caption"
+          checked-icon="mdi-lightbulb"
+          unchecked-icon="mdi-lightbulb-outline"
+          size="lg"
+        >
+          <q-tooltip class="text-body1" style="width: 240px">
+            <b>Включить o3-mini</b><br />
+            Это новая рассуждающая модель, которая строит цепочки рассуждений
+            для решения комплексных задач.</q-tooltip
+          >
+        </q-toggle>
+
+        <div
+          class="col text-caption text-grey q-ma-none"
+          style="
+            word-wrap: none;
+            text-overflow: ellipsis;
+            font-size: 0.65rem;
+            align-self: flex-end;
+            text-align: center;
+          "
+        >
+          ИИ может ошибаться.
+          <template v-if="!Platform.is.mobile">
+            Проверяйте важную информацию.
+          </template>
+        </div>
+
+        <q-btn
+          round
+          flat
+          @click="attachFile"
+          :disable="
+            c.isMessageLoading || !!attachedFile || c.model == 'o3-mini'
+          "
+          icon="eva-attach-2-outline"
+          class="q-mr-sm"
+          style="align-self: flex-start"
+        ></q-btn>
+        <q-btn
+          class="bg-primary text-white msg-btn"
+          round
+          flat
+          icon="eva-arrow-upward-outline"
+          @touchstart="sendMessage"
+          @click="sendMessage"
+          :loading="c.isMessageLoading"
+          :disable="newMessageText.length < 1"
+          style="width: 32px; height: 32px; z-index: 8000"
+        >
+        </q-btn>
       </div>
     </div>
   </q-page>
@@ -194,6 +224,7 @@ import WelcomeScreen from 'src/components/WelcomeScreen.vue';
 import { computed } from 'vue';
 import { useMeta } from 'quasar';
 import { getMaterialFileIcon } from 'file-extension-icon-js';
+import { Platform } from 'quasar';
 
 const c = useChatStore();
 
@@ -220,6 +251,13 @@ const attachedFileUrl = computed(() => {
   }
   return '';
 });
+
+watch(
+  () => c.model,
+  () => {
+    if (c.model == 'o3-mini') attachedFile.value = null;
+  },
+);
 
 function checkFileAttachment() {
   window.ym && window.ym(98810411, 'reachGoal', 'ATTACH_FILE');
@@ -371,10 +409,6 @@ watch(
 <style lang="scss">
 .msg-btn {
   transition: ease-in-out 0.2s;
-}
-
-.msg-btn:hover {
-  transform: rotate(-90deg);
 }
 
 .no-bg {

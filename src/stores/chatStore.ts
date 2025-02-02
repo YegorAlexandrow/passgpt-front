@@ -596,6 +596,9 @@ export const useChatStore = defineStore('chatStore', () => {
         }
         fetchActualSubscription().then(checkMessagesCount);
         break;
+      case 'error':
+        createErrorNotification(data.text);
+        break;
       case 'tool_new':
         const tmp = messages.value.pop();
         messages.value.push({
